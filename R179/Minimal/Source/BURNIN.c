@@ -22,6 +22,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include "Types.h"
 #include "Timer.h"
 #include "DigOut.h"
@@ -289,6 +290,9 @@ static void ZeroAnalogOutputs (void);
 static void BurninVDriveTest (void);
 static void BurninMvbTest (void);
 
+CHAR failureStr[2000];
+
+
 //#define CONTINUOUS
 //--------------------------------------------------------------------------
 // Module:
@@ -348,6 +352,7 @@ void BurnInCode (void)
 		HexLEDUpdate (0x07);
         BurninMvbTest();
 #else
+		failureStr[0] = 0;
         HexLEDUpdate (0x02);
         /* Test the ability to turn on and off both VDrives (SSR_OUTs) */
         if (burnin_error_code == 0)
@@ -415,10 +420,16 @@ void BurnInCode (void)
     /* Turn the LED on always, indicates a burn-in failure */
     DO_ResetBitWithId (DIGOUT_BIT09);
 
+	sprintf (str,"%d without failures\n\r",++iteration);
+	strcat(failureStr, str);
     /* Loop forever here while displaying the error code on the LED
        HEX Display */
     while (1)
-    {}
+    {
+		TM_Wait (5000);
+		SC_PutsAlways(failureStr);
+	
+	}
 }
 
 //--------------------------------------------------------------------------
@@ -861,9 +872,11 @@ static void BurninVDriveTest (void)
         GiveSettleTime();
 
         sprintf (str, "Test %u\n\r", index);
+		strcat(failureStr, str);
         SC_PutsAlways (str);
         aValue = AI_GetValue (ANALOGIN_10);
         sprintf (str, "A10 value =  %u\n\r", aValue);
+		strcat(failureStr, str);
         SC_PutsAlways (str);
 
         /* Verify the A/D value is not outside the allowed range */
@@ -1056,12 +1069,16 @@ static void BurninAnalogTests (void)
         analog_value = AI_GetDataValueADC (ptr->a2dId);
 
         sprintf (str, "AlogTest %u", index);
+		strcat(failureStr, str);
         SC_PutsAlways (str);
         sprintf (str, " inVal =  %u -- ", analog_value);
-        SC_PutsAlways (str);
+		strcat(failureStr, str);
+		SC_PutsAlways (str);
         sprintf (str, "[Min,Max] = [%u , %u] -- ", min,max);
-        SC_PutsAlways (str);
+        strcat(failureStr, str);
+		SC_PutsAlways (str);
 		sprintf (str, "DAC = [%d , %d] \n\r", dacP,dacN);
+		strcat(failureStr, str);
         SC_PutsAlways (str);
 
         if (analog_value < min || analog_value > max)
@@ -1294,6 +1311,7 @@ static void BurninMvbTest (void)
         burnin_error_code = MVB_ERR;
         expiredTime = TM_GetExpiredTime (tm2);
         sprintf (str, "Expired time= %d\n \r", expiredTime);
+		strcat(failureStr, str);
         SC_PutsAlways (str);
     }
     TM_Free (tm2);
