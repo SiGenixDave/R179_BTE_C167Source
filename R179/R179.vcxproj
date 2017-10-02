@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Minimal\Source\Analog.c" />
+    <ClCompile Include="Minimal\Source\BURNIN.c" />
+    <ClCompile Include="Minimal\Source\CRC.C" />
+    <ClCompile Include="Minimal\Source\Debug.c" />
+    <ClCompile Include="Minimal\Source\Digital.c" />
+    <ClCompile Include="Minimal\Source\HEXLED.c" />
+    <ClCompile Include="Minimal\Source\HWInit.c" />
+    <ClCompile Include="Minimal\Source\INTERUPT.c" />
+    <ClCompile Include="Minimal\Source\IPack.c" />
+    <ClCompile Include="Minimal\Source\MAIN.c" />
+    <ClCompile Include="Minimal\Source\mvbvar.c" />
+    <ClCompile Include="Minimal\Source\PIL_DEF.C" />
+    <ClCompile Include="Minimal\Source\Pwm.c" />
+    <ClCompile Include="Minimal\Source\RAM.C" />
+    <ClCompile Include="Minimal\Source\SPAREISR.c" />
+    <ClCompile Include="Minimal\Source\TaskMVB.c" />
+    <ClCompile Include="Minimal\Source\Version.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Minimal\Source\Analog.h" />
+    <ClInclude Include="Minimal\Source\BurnIn.h" />
+    <ClInclude Include="Minimal\Source\CRC.h" />
+    <ClInclude Include="Minimal\Source\cssmisc.h" />
+    <ClInclude Include="Minimal\Source\Debug.h" />
+    <ClInclude Include="Minimal\Source\Digital.h" />
+    <ClInclude Include="Minimal\Source\HEXLED.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\AlogOut.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\AnalogIn.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\ChartRec.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\DateTime.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\DigIn.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\DigOut.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\HidacVer.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\PwmIn.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\PwmOut.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\SerComm.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\Tacho.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\targetver.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\Timer.h" />
+    <ClInclude Include="Minimal\Source\HidacDrv\types.h" />
+    <ClInclude Include="Minimal\Source\HWInit.h" />
+    <ClInclude Include="Minimal\Source\Ipack.h" />
+    <ClInclude Include="Minimal\Source\mvbvar.h" />
+    <ClInclude Include="Minimal\Source\Pwm.h" />
+    <ClInclude Include="Minimal\Source\RAM.h" />
+    <ClInclude Include="Minimal\Source\TaskMvb.h" />
+    <ClInclude Include="Minimal\Source\tcn.h" />
+    <ClInclude Include="Minimal\Source\tcn_api.h" />
+    <ClInclude Include="Minimal\Source\VEC_TBL.h" />
+    <ClInclude Include="Minimal\Source\Version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Minimal\Source\BuildBurninSw.bat" />
+    <None Include="Minimal\Source\CONFIG.CRC" />
+    <None Include="Minimal\Source\cstart.a66" />
+    <None Include="Minimal\Source\dl1.bat" />
+    <None Include="Minimal\Source\dl2.bat" />
+    <None Include="Minimal\Source\FlashC167.exe" />
+    <None Include="Minimal\Source\GPCRCG.EXE" />
+    <None Include="Minimal\Source\BuildAppSw.bat" />
+    <None Include="Minimal\Source\HidacDrv\HIDAC.LNO" />
+    <None Include="Minimal\Source\MAKE.EXE" />
+    <None Include="Minimal\Source\MakeFile" />
+    <None Include="Minimal\Source\r179.lnk" />
+    <None Include="Minimal\Source\r179.rom" />
+    <None Include="Minimal\Source\Version.exe" />
+    <None Include="Minimal\Source\VersionInfo.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0BFDFD2F-C2CE-4B01-A687-C9C32E189578}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>R179</RootNamespace>
+    <ProjectName>Application</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>REMOVE_AFTER_TEST;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\CustomerProjects\Bombardier\R179Hidac\HIDAC_SWEDEN\REV5\R179\Minimal\HIDAC_Drivers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

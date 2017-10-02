@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\HidacDrv">
+      <UniqueIdentifier>{09abf4a8-2caf-4dfb-804d-ec4aa5b7bbf8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Minimal\Source\CRC.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\HEXLED.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\HWInit.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\INTERUPT.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\MAIN.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\mvbvar.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\PIL_DEF.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\RAM.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\SPAREISR.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\Debug.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\TaskMVB.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\IPack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\BURNIN.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\Digital.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\Analog.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\Pwm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\Version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Minimal\Source\CRC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\cssmisc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HEXLED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HWInit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\mvbvar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\RAM.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\tcn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\tcn_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\VEC_TBL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\AlogOut.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\AnalogIn.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\ChartRec.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\DateTime.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\DigIn.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\DigOut.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\HidacVer.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\PwmIn.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\PwmOut.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\SerComm.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\Tacho.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\targetver.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\Timer.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\HidacDrv\types.h">
+      <Filter>Source Files\HidacDrv</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\TaskMvb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Ipack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\BurnIn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Analog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Pwm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Digital.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Minimal\Source\CONFIG.CRC">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\cstart.a66">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\dl1.bat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\dl2.bat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\GPCRCG.EXE">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\MAKE.EXE">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\MakeFile">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\r179.lnk">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\r179.rom">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\Version.exe">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\HidacDrv\HIDAC.LNO">
+      <Filter>Source Files\HidacDrv</Filter>
+    </None>
+    <None Include="Minimal\Source\VersionInfo.txt">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\FlashC167.exe">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\BuildBurninSw.bat">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Minimal\Source\BuildAppSw.bat">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+</Project>

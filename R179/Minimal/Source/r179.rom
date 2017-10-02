@@ -1,0 +1,25 @@
+vectab(100000H)
+vecinit
+
+;define memory map for EPROM's
+memory (rom(100000H to 13FFFFH))       ;CS0 eprom
+
+;reserve all lower memory of C167 (ROM and RAM)
+re(me(0h to 0efffh))               
+
+;this area of the C167 is reserved
+re(me(0f200h to 0f5ffh))              
+
+memory (ram(0f000h  to 0ffffh))        ;RAM/SFR area
+memory (ram(200000h to 23ffffh))       ;CS1 sram
+re(me(010000h to 0fffffh))             ;unused area between iram and CS0 eprom
+re(me(0140000h to 01fffffh))           ;unused area between eprom and CS1 ram
+;memory (ram(300000h to 307fffh))      ;CS2 RTC backup ram
+;memory (ram(400000h to 401fffh))      ;CS2 dpram
+;memory (ram(500000h to 501fffh))      ;CS3 bus expansion
+;memory (ram(600000h to 600fffh))      ;CS4 local i/o
+;memory (ram(7f0000h to 0ffffffh))     ;CS0 geabus
+
+symbolcolumns(1)
+pagewidth(80)
+r179.lno TO r179.out case 

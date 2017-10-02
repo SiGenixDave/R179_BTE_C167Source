@@ -1,0 +1,589 @@
+; @(#)cstart.asm    1.42
+;*****************************************************************************
+;*
+;            **************** NOTE *******************
+;            *   This code has been modified by      *
+;            *   A.T. Barrett & Associates to        *
+;            *   work with RTXC. To find the RTXC    *
+;            *   related code simply search for the  *
+;            *           string "RTXC".              *
+;            *****************************************
+;
+;* MODULE       : cstart.asm
+;*
+;* DESCRIPTION  : Startup code for the 80166/80167
+;*
+;*      - Processor initialization.
+;*      - Initialization of static variables in internal or external
+;*        ram. C variables which have to be initialized are specified
+;*        in ROM section C166_INIT. C variables which must
+;*        be cleared are specified in ROM section C166_BSS.
+;*      - Set user stack pointer.
+;*      - Call the user program: main().
+;*      - On exit cpu is set in idle mode.
+;*
+;* COPYRIGHTS   : Tasking B.V., Amersfoort 1990
+;*
+;* October 11, 1995 - PZ
+;*   Adapted the IVPS version to the C167 Controller (SYSCONx/BUSCONx) 
+;* November 13, 1995 - PZ
+;*   Process BUSCON0: replaced ((~__MCTC)&000Fh)) by (__MCTC) to keep the bit
+;*   declaration for the wait states consistent with the C167 User's Manual.  
+;* May 16, 1996 - PZ
+;*   Process BUSCON1: Read/Write Delay Control   : with read/write delay
+;* June 28, 1996 - SJM & DAS
+;*   Moved initialization of BUSCON1 and ADDRESEL1 right after EINIT.  This was
+;*   done in order to initialize the Static Ram to zeros.
+;* August 20, 1996 - JVL
+;*   Increased stack size from 1000h to 3000h.
+;* June 20, 2000 - PZ
+;*   Changed BUSCONx initialization for DBFM
+;* November 29, 2000 - PZ
+;*   Set MCTC bit 3 to "1" => Asynchronous READY
+;* September 13, 2002 - PZ
+;*   Changed BUSCONx initialization for ECAM
+;*****************************************************************************
+
+
+$EXTEND                     ; enable all 80167 extensions
+$NOMOD166                   ; disable the internal set of 80166 SFRs
+$STDNAMES(reg167.def)      ; load set of 80167 SFRs from reg167b.def
+
+$MODEL(LARGE)               ; set assembler controls.
+$SEGMENTED
+$CASE
+$GENONLY
+$DEBUG
+$NOLOCALS
+
+
+
+    NAME    CSTART          ; module name.
+    
+    EXTERN  _main:FAR       ; start label user program.
+    ;EXTERN  _CopyToRam:FAR       ; start label user program.
+
+    PUBLIC  __IDLE          ; cstart end
+    PUBLIC  __EXIT          ; address to jump to on 'exit()'.
+
+ASSUME  DPP3:SYSTEM         ; assume system data page pointer.
+
+
+
+    ; Value definitions for System Configuration Register : SYSCON/BUSCON0
+    ; 'Default' is the value after reset.
+
+    ; Flash EPROM, Battery back-up RAM and IPack
+    ; With External READY enabled Memory Cycle Time is extended by a number
+    ; of additional State Times in a range from 0 through 7.
+    ; - BUSCON0.3 = '0' 	:synchronous READY.
+    ; - BUSCON0.3 = '1' 	:asynchronous READY.
+    ; - BUSCON0.[2..0]  	:up to 7 wait states are available (0 => 7).
+    ;
+    __MCTC      LIT     '0Ch'; => MCTC [3..0] = 1100b = 0Ch
+			    ; Ready is asynchronous  (MCTC.3 = '1').
+			    ; Memory wait state is 1 (MCTC.[2..0] = '100')
+
+    ; The Read/Write Signal Delay is 0.5 or 0 State Times. BUSCON0.4
+    __RWDC0     LIT     '1'
+			    ; 0 = Delay Time (Default)
+			    ; 1 = No Delay Time
+
+    ; Memory Tri-state is extended by either 1 or 0 State Times. BUSCON0.5
+    __MTTC0     LIT     '1'
+			    ; 0 = Delay Time (Default)
+			    ; 1 = No Delay Time
+
+    ; External bus configurations. BUSCON0[7..6]
+			    ; Default state is determined by the
+			    ; state of the port pins P0L.7 and P0L.6
+			    ; at reset.
+			    ; Programmed for 16-bit Demultiplexed Bus
+
+    ; ALE Signal is lengthened by either 1 or 0 State Times. BUSCON0.9
+    ; Do not disable the ALE lengthening option for a multiplexed bus
+    ; configuration. See problem 17 in errata sheet SAB-C167A-LM,ES-AC,1.1
+    ; on page 4/9.
+    __ALECTL0   LIT     '0'
+			    ; 1 = Delay Time (Default if pin #EA is low
+			    ; 0 = No Delay Time (Default if pin #EA is high
+
+    ; READY# Input Enable control bit. BUSCON0.12
+    __RDYEN0    LIT     '0'
+			    ; 0 = disabled (Default)
+			    ; 1 = enabled
+
+    ; Process BUSCON0 low byte and high byte values
+    BUSC0_L     EQU     ((__MTTC0<<5) | (__RWDC0<<4) | (__MCTC))
+    BUSC0_H     EQU     ((__RDYEN0<<4) | (__ALECTL0<<1))
+
+    ; Mask low and high byte BUSCON0
+    BUSC0_M_L   EQU     03Fh
+    BUSC0_M_H   EQU     012h
+
+    ; Write Configuration Mode Control (WR) Enable bit. SYSCON.7
+    __WRCFG     LIT     '0'
+			    ; 0 = Normal operation of WR# and BHE# (default)
+			    ; 1 = WR# acts as WRL#. BHE# acts as WRH#
+
+    ; System Clock Output (CLKOUT) Enable bit. SYSCON.8
+    __CLKEN     LIT     '1'
+			    ; 0 = disabled
+			    ; 1 = enabled (Default)
+
+    ; Byte High Enable (BHE#) pin control bit. SYSCON.9
+    __BYTDIS    LIT     '0'
+			    ; 0 = enabled (Default)
+			    ; 1 = disabled
+
+    ; Internal ROM Access Enable (Read Only). SYSCON.10
+			    ; Default state is determined by the state
+			    ; of the #EA pin at reset
+
+    ; Segmentation Disable control bit. SYSCON.11
+    __SGTDIS    LIT     '0'
+			    ; 0 = Default is segmentation enabled
+			    ; 1 = segmentation is disabled
+
+    ; ROM Segment Mapping control bit. SYSCON.12
+    __ROMS1     LIT     '0'     
+			    ; 0 = Internal ROM mapped to segm.0 (default)
+			    ; 1 = Internal ROM mapped to segm.1
+
+    ; Stack Size selection of between 32 and 1024 words. SYSCON[15..13]
+    __STKSZ     LIT     '0' 
+			    ; System stack sizes
+			    ; 0 = 256 words (Default)
+			    ; 1 = 128 words
+			    ; 2 =  64 words
+			    ; 3 =  32 words
+			    ; 4 = 512 words
+			    ; 7 = 1024 words   
+
+    ; Process SYSCON low byte and high byte values.
+    SYSC_L      EQU (__WRCFG << 7)
+    SYSC_H      EQU ((__STKSZ << 5) | (__ROMS1 << 4) | (__SGTDIS<<3) | (__BYTDIS<<1) | __CLKEN)
+
+    ; Mask low and high byte SYSCON.
+    SYSC_M_L    EQU     080H
+    SYSC_M_H    EQU     0FBH
+
+    ; Predefined functions for register R1, R2 and R3.
+    POF_RAM     LIT     'R1'        ; Page offset address ram data.
+    SOF_RAM     LIT     'R1'        ; Segment offset address ram data.
+    SOF_RAM_H   LIT     'RH1'       ; Segment address high byte.
+    POF_ROM     LIT     'R2'        ; Page offset address rom data.
+    SOF_ROM     LIT     'R2'        ; Segment offset address rom data.
+    SOF_ROM_H   LIT     'RH2'       ; Segment address high byte.
+    BP_RAM      LIT     'R3'        ; Bit position ram data
+
+
+;=====================================================================
+; ** BEGIN RTXC ** This stack has to match the definition in rtxcbug
+
+;stksize         EQU     3000H   ; rtxc kernel stack size 512 bytes
+
+
+
+;__KRNLDATA SECTION DATA WORD PUBLIC
+
+;    DS          stksize
+
+;GLOBAL rtxstack
+;rtxstack        LABEL   WORD
+
+;__KRNLDATA ENDS
+
+
+
+
+;__NULLDATA SECTION DATA WORD PUBLIC
+
+;    DS          stksize
+;GLOBAL nullstack
+;nullstack       LABEL   WORD
+
+;__NULLDATA ENDS
+
+
+
+; ** END RTXC **
+;=============================================================================
+
+
+;*****************************************************************************
+;* __CSTART
+;*****************************************************************************
+__CSTART_PR SECTION CODE WORD PUBLIC 'CPROGRAM'
+;__CSTART_PR SECTION CODE WORD PUBLIC 'ROM_FUNCTIONS'
+__CSTART    PROC TASK __CSTART_TASK INTNO __CSTART_INUM = 00H
+
+    ; Disable watchdog timer.
+    DISWDT
+
+    ; Set SYSCON register.
+    BFLDL       SYSCON, #SYSC_M_L, #(SYSC_L AND SYSC_M_L)
+    BFLDH       SYSCON, #SYSC_M_H, #(SYSC_H AND SYSC_M_H)
+
+    ; Set BUSCON0 register.
+    BFLDL       BUSCON0, #BUSC0_M_L, #(BUSC0_L AND BUSC0_M_L)
+    BFLDH       BUSCON0, #BUSC0_M_H, #(BUSC0_H AND BUSC0_M_H)
+
+    MOV         STKOV, #?SYSSTACK_BOTTOM + 6*2  ; Set stack underflow pointer.
+    MOV         STKUN, #?SYSSTACK_TOP           ; Set stack overflow pointer.
+    MOV         SP, #?SYSSTACK_TOP              ; Set stack pointer.
+
+    MOV         CP, #RBANK                      ; Set context pointer.
+
+    EINIT										; End of initialization
+                                  
+    
+    BOTTOM_BITRAM   LIT '0FD00H'
+
+    ; Clear bit addressable memory
+    MOV         R0, #0FDFEH                     ; R0 = top of bit addressable area
+
+    MOV         BUSCON1,    #004BEh
+    MOV         ADDRSEL1,   #02006h  ; Start address = 200000h
+				     ; Range size = 256 KByte 
+	
+;=============================================================================
+
+loop:
+    CMP         R0, #RBANK                      ; if( R0 in bit addressable area )
+    JMP         CC_EQ, cbclr                    ; then continue next (bit) word clear.
+    MOV         [R0], zeros                     ; clear
+
+cbclr:
+    CMPD2       R0, # BOTTOM_BITRAM             ; if( not bottom bit addressable area )
+    JMP         CC_NE, loop                     ; then continue next (bit) word clear
+
+    ; The following code is needed for initialization of static variables
+    ; C166_INIT
+    MOV         R4, #POF ?C166_INIT_HEAD        ; move intra-page offset address rom
+						; data section C166_INIT to R4
+INIT_DPP0:
+    MOV         DPP0, #PAG ?C166_INIT_HEAD      ; load data page pointer register DPP0
+						; with data page of rom data C166_INIT
+    NOP                                         ; delay for pipeline effect
+
+INIT:                   
+    MOV         R5, [R4+]                       ; INIT block header code -> R5
+    CMP         R5, #01H                        ; check if header code 1 (bit)
+    JMP         CC_EQ, INIT_01                  ;
+    CMP         R5, #06H                        ; check if header code 6 (far)
+    JMP         CC_EQ, INIT_06                  ;
+    CMP         R5, #07H                        ; check if header code 7 (huge)
+    JMP         CC_NE, INIT_END                 ; if(no header code) end initialization
+
+INIT_07:                                        ; initialize huge ram data. (data > 64K)
+    MOV         SOF_RAM, [R4+]                  ; move intra-segment offset address ram
+						; data block to SOF_RAM=R1
+    MOV         R3, [R4+]                       ; move segment address ram data block 
+						; to register R3
+
+    ; process data page number ram data
+    MOV         RH3, SOF_RAM_H                  ; R3.15:14=lower order bits of data page
+    ROL         R3, #2                          ; R3.3:2:1:0 = data page number
+    AND         R3, #0FH                        ; clr bit R3.15 to bit R3.4
+    MOV         DPP1, R3                        ; load data page pointer register DPP1
+						; with data page of ram data block
+    BFLDH       SOF_RAM, #0C0H, #040H           ; DPP1:POF_RAM ->SOF_RAM=R1
+    MOV         SOF_ROM, [R4+]                  ; move intra-segment offset address rom
+						; data block to SOF_ROM=R2
+    MOV         R3, [R4+]                       ; move segment address rom data block
+						; to R3
+
+    ; process data page number rom data
+    MOV         RH3, SOF_ROM_H                  ; R3.15:14=lower order bits of data page
+    ROL         R3, #2                          ; R3.3:2:1:0 = data page number
+    AND         R3, #0FH                        ; clr bit R3.15 to bit R3.4
+    MOV         DPP2, R3                        ; load data page pointer register DPP2
+						; with data page of rom data block
+    BFLDH       SOF_ROM, #0C0H, #080H           ; DPP2:POF_ROM ->SOF_ROM=R2
+    MOV         R5, [R4+]                       ; number of bytes (R6:R5) to move from
+    MOV         R6, [R4+]                       ; rom to ram. MSW=R6, LSW=R5 (long word)
+	
+MB07_3:
+    CMPD1       R5, #0                          ; test if all bytes are moved and
+    JMP         CC_NE, MB07_1                   ; decrement number of bytes to move.
+    CMPD1       R6, #0                          ;
+    JMP         CC_EQ, INIT                     ; if( block end ) next initialization
+
+MB07_1:
+    MOVB        [SOF_RAM], [SOF_ROM]            ; move byte from rom to ram
+    CMPI1       SOF_RAM, #07FFFH                ; test end of data page and inc SOF_RAM
+    JMP         CC_NE, MB07_2                   ; if(no page end) cont init current page
+    MOV         SOF_RAM, #04000H                ; preset offset address ram data
+    ADD         DPP1, #1                        ; next page of ram data; increment DPP1
+
+MB07_2:
+    CMPI1       SOF_ROM, #0BFFFH                ; test end of page and inc SOF_ROM
+    JMP         CC_NE, MB07_3                   ; if(no page end) cont init current page
+    MOV         SOF_ROM, #08000H                ; preset offset address rom data
+    ADD         DPP2, #1                        ; next page of rom data; increment DPP2
+    JMP         CC_UC, MB07_3                   ; jump for next byte move
+
+INIT_06:
+    ; initialize far ram data. (CPU mode is segmented with DPP usage linear
+    ; or paged.)
+    MOV         POF_RAM, [R4+]                  ; move intra-page offset address ram
+												; data block to POF_RAM=R1
+    BFLDH       SOF_RAM, #0C0H, #040H           ; DPP1:POF_RAM ->SOF_RAM=R1
+    MOV         DPP1, [R4]                      ; load data page pointer register DPP1
+												; with data page of ram data block
+    ADD         R4, #2                          ; inc offset address to ram data section
+												; C166_INIT and also insure a delay for
+												; pipeline effect.(DPP1 set)
+    MOV         POF_ROM, [R4+]                  ; move intra-page offset address rom
+												; data block to POF_ROM=R2
+    BFLDH       SOF_ROM, #0C0H, #080H           ; DPP2:POF_ROM ->SOF_ROM=R2
+    MOV         DPP2, [R4]                      ; load data page pointer register DPP2
+												; with data page of rom data block
+    ADD         R4, #2                          ; inc offset address to rom data section
+												; C166_INIT and also insure a delay for
+												; pipeline effect.(DPP2 set)
+    MOV         R5, [R4+]                       ; number of bytes to move from rom to
+												; ram for specified data block.
+
+MB06_1:
+    CMPD1       R5, #0                          ; test on data block end
+    JMP         CC_EQ, INIT                     ; if( block end ) next initialization
+    MOVB        [SOF_RAM], [SOF_ROM+]           ; move byte from rom to ram, inc SOF_ROM
+    ADD         SOF_RAM, #1                     ; inc SOF_RAM
+    JMP         CC_UC, MB06_1                   ; jump for next byte move
+
+INIT_01:
+    ADD         R4,#0CH                         ; skip DBPTR, DPTR and DW
+    JMP         CC_UC, INIT                     ; continue with next initialization
+
+INIT_END:
+    ; C166_BSS
+    MOV         R4, #POF ?C166_BSS_HEAD         ; move intra-page offset address rom
+
+BSS_DPP0:
+    ; data section C166_BSS to R4
+    MOV         DPP0,#PAG ?C166_BSS_HEAD        ; load data page pointer register DPP0
+						; with data page of rom data C166_BSS
+    NOP                                         ; delay for pipeline effect
+
+BSS:
+    MOV         R5, [R4+]                       ; BSS block header code -> R5
+    CMP         R5, #06H                        ; check if header code 6 (far)
+    JMP         CC_EQ, BSS_06                   ;
+    CMP         R5, #07H                        ; check if header code 7 (huge)
+    JMP         CC_NE, BSS_END                  ; if(no header code) end initialization
+
+BSS_07:
+    ; clear huge ram data (data > 64 K)
+    MOV         SOF_RAM, [R4+]                  ; move intra-segment offset address ram
+												; data block to SOF_RAM=R1
+    MOV         R3, [R4+]                       ; move segment address ram data block
+												; to R3
+												; process data page number ram data 
+    MOV         RH3, SOF_RAM_H                  ; R3.15:14=lower order bits of data page
+    ROL         R3, #2                          ; R3.3:2:1:0 = data page number
+    AND         R3, #0FH                        ; clr bit R3.15 - R3.4
+    MOV         DPP1, R3                        ; load data page pointer register DPP1
+						; with data page of ram data block
+    BFLDH       SOF_RAM, #0C0H, #040H           ; DPP1:POF_RAM ->SOF_RAM=R1
+
+    MOV         R5, [R4+]                       ; number of bytes (R6:R5) to clear in
+    MOV         R6, [R4+]                       ; specified ram data block. 
+						; MSW=R6, LSW=R5 (long word)
+
+CB07_2:
+    CMPD1       R5, #0                          ; test if all bytes are cleared and
+    JMP         CC_NE, CB07_1                   ; decrement number of bytes to clear.
+    CMPD1       R6, #0                          ;
+    JMP         CC_EQ, BSS                      ; if( block end ) next initialization
+
+CB07_1:
+    MOVB        [SOF_RAM], ZEROS                ; clear byte
+    CMPI1       SOF_RAM, #07FFFH                ; test end of data page and inc SOF_RAM
+    JMP         CC_NE, CB07_2                   ; if(no page end) next byte clear
+    MOV         SOF_RAM, #04000H                ; preset offset address ram data
+    ADD         DPP1, #1                        ; next page ram data; increment DPP1
+    JMP         CC_UC, CB07_2                   ; jump for next byte clear
+
+BSS_06:
+    ; clear far ram data. 
+    ;(CPU mode is segmented with DPP usage linear or paged.)
+    MOV         POF_RAM, [R4+]                  ; move intra-page offset address ram
+						; data block to POF_RAM=R1
+    BFLDH       SOF_RAM, #0C0H, #040H           ; DPP1:POF_RAM ->SOF_RAM=R1
+    MOV         DPP1, [R4]                      ; load data page pointer register DPP1
+						; with data page of ram data block
+    ADD         R4, #2                          ; inc offset address to ram data section
+						; C166_BSS and also insure a delay for 
+						; pipeline effect. (DPP1 set)
+
+    MOV         R5, [R4+]                       ; number of bytes to clear in specified
+						; ram data block
+
+CB06_1:
+    CMPD1       R5, #0                          ; test on data block end
+    JMP         CC_EQ, BSS                      ; if( block end ) next initialization
+    MOVB        [SOF_RAM], ZEROS                ; clear byte
+    ADD         SOF_RAM, #1                     ; inc SOF_RAM
+    JMP         CC_UC, CB06_1                   ; jump for next byte clear
+
+BSS_END:
+    MOV         DPP0, #0                        ; restore DPP0 to its default value
+    MOV         DPP1, #PAG ?USRSTACK_TOP        ; set DPP1 to page of user stack
+    MOV         DPP2, #PAG C166_DGROUP          ; set DPP2 to page of default data 
+						; group
+    NOP                                         ; delay for pipeline effect
+
+    MOV         R0, #POF ?USRSTACK_TOP          ; set user stack pointer
+    BSET        R0.0EH                          ; User stack uses DPP1
+
+;=============================================================================
+; ** BEGIN RTXC **
+; THIS CODE HAS BEEN MODIFIED TO MEET THE REQUIREMENTS OF RTXC'S NULL TASK
+;
+
+;    MOV         R0, #POF nullstack              ; restore user stack pointer
+;    MOV         R5, #PAG nullstack
+;    MOV         DPP1,R5
+;    NOP
+;    BSET        R0.0EH                          ; User stack uses DPP1
+
+; ** END RTXC **
+;=============================================================================
+
+; ** BEGIN BUSCON/ADDSEL register initialization
+
+; SRAM
+; Initialize BUSCON1 with:
+; 0...............  = Write Chip Select Enable   : disabled
+; .0..............  = Read Chip Select Enable    : disabled
+; ..0.............  = X                          : don't care
+; ...0............  = Ready Input Enable         : disabled
+; ....0...........  = X                          : don't care
+; .....1..........  = Bus Active Control         : enabled
+; ......0.........  = ALE Lengthening Control    : disabled
+; .......0........  = X                          : don't care
+; ........10......  = External Bus Configuration : 16-bit Demultiplexed Bus
+; ..........1.....  = Memory Tristate Control    : no waitstate
+; ...........1....  = Read/Write Delay Control   : no read/write delay
+; ............1111  = Memory Cycle Time Control  : no waitstate
+; 0000010010111111B = 0x04BF
+	
+	; DAS changed wait states from 0 to 5 due to FLASH programming
+	; issues with the HIDAC
+    MOV         BUSCON1,    #004BEh
+    MOV         ADDRSEL1,   #02006h  ; Start address = 200000h
+				     ; Range size = 256 KByte 
+
+; Nonvolatile SRAM with Real-Time Clock
+; Initialize BUSCON2 with:
+; 0...............  = Write Chip Select Enable   : disabled
+; .0..............  = Read Chip Select Enable    : disabled
+; ..0.............  = X                          : don't care
+; ...0............  = Ready Input Enable         : disabled
+; ....0...........  = X                          : don't care
+; .....1..........  = Bus Active Control         : enabled
+; ......0.........  = ALE Lengthening Control    : disabled
+; .......0........  = X                          : don't care
+; ........00......  = External Bus Configuration : 8-bit Demultiplexed Bus
+; ..........1.....  = Memory Tristate Control    : no wait state
+; ...........1....  = Read/Write Delay Control   : no read/write delay
+; ............1110  = Memory Cycle Time Control  : 1 wait state 
+; 0000010000111110B = 0x043E
+
+    MOV         BUSCON2,    #0043Eh
+    MOV         ADDRSEL2,   #03003h ; Start address = 300000h
+				    ; Range size = 32 KByte
+;IPACK Bus:
+; Initialize BUSCON3 with:
+; 0...............  = Write Chip Select Enable   : disabled
+; .0..............  = Read Chip Select Enable    : disabled
+; ..0.............  = X                          : don't care
+; ...1............  = Ready Input Enable         : enabled
+; ....0...........  = X                          : don't care
+; .....1..........  = Bus Active Control         : enabled
+; ......0.........  = ALE Lengthening Control    : disabled
+; .......0........  = X                          : don't care
+; ........10......  = External Bus Configuration : 16-bit Demultiplexed Bus
+; ..........1.....  = Memory Tristate Control    : no wait state
+; ...........1....  = Read/Write Delay Control   : no read/write delay
+; ............0...  = Synch/Asynch Ready         : synchronous
+; .............110  = Memory Cycle Time Control  : 1 wait state
+; 0001010010110110B = 0x14B6
+
+    MOV         BUSCON3,    #014BEh
+    MOV         ADDRSEL3,   #04008h ; Start address = 400000h
+				    ; Range size = 1 MByte
+
+; I/O
+; Initialize BUSCON4 with:
+; 0...............  = Write Chip Select Enable   : disabled
+; .0..............  = Read Chip Select Enable    : disabled
+; ..0.............  = X                          : don't care
+; ...0............  = Ready Input Enable         : disabled
+; ....0...........  = X                          : don't care
+; .....1..........  = Bus Active Control         : enabled
+; ......0.........  = ALE Lengthening Control    : disabled
+; .......0........  = X                          : don't care
+; ........10......  = External Bus Configuration : 16-bit Demultiplexed Bus
+; ..........1.....  = Memory Tristate Control    : no wait state
+; ...........0....  = Read/Write Delay Control   : with read/write delay
+; ............1110  = Memory Cycle Time Control  : 1 wait state
+; 0000010010101110B = 0x04AE
+
+    MOV         BUSCON4,    #004ACh
+    MOV         ADDRSEL4,   #05000h ; Start address = 500000h
+				    ; Range size = 4 KByte
+
+
+; ** END BUSCON/ADDSEL **
+;=============================================================================
+; set up stack parameters for main
+    MOV         R12, #0                         ; set argc to 0
+    MOV         R13, #0                         ;
+    MOV         R14, #0                         ; set argv[] to 0
+
+    CALL            _main                   	; call reset task _main()
+    ;CALL            _CopyToRam                ; call reset task _main()
+
+; The exit() function causes normal program termination to occur. First, all 
+; functions registered by the atexit() function are called in the reverse 
+; order. Next, all open streams with unwritten buffered data are flushed, all 
+; open streams are closed and all files created by the tmpfile() function are 
+; removed. The status value passed to exit is returned in R4.
+
+__EXIT:         LABEL       FAR                 ; the exit() or abort() function jumps
+												; to this entry.
+
+__IDLE: 
+    IDLE                                        ; Power down CPU until peripheral interrupt
+												; or external interrupt occurs.
+    JMPR        CC_UC, __IDLE                   ; set idle mode again.
+    RETV                                        ; Virtual return.
+
+__CSTART    ENDP
+
+__CSTART_PR ENDS
+
+
+
+C166_US SECTION DATA WORD GLBUSRSTACK 'CUSTACK'
+
+    DS          2                               ; Allocate a user stack of at least 2 bytes
+
+C166_US ENDS
+
+
+
+C166_DGROUP DGROUP  __DUMMY
+__DUMMY SECTION DATA WORD PUBLIC 'CNEAR'
+
+__DUMMY ENDS
+
+
+
+RBANK   REGDEF R0-R15           				; Register usage
+    SSKDEF  __STKSZ         					; System stack size
+    
+    END
