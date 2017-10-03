@@ -1,0 +1,15 @@
+# git ignore file
+*.obj
+*.opensdf
+*.user
+*.err
+*.out
+*.map
+*.hex
+*.lno
+*.src
+*.lst
+*.mp2
+*.suo
+*.sln.docstates
+*.sdf
