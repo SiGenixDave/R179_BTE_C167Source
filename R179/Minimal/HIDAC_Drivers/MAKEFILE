@@ -1,0 +1,228 @@
+#---------------------------------------------------------------------------
+#   Copyright (c) 2010 Bombardier Transportation (Holdings) USA, Inc
+#
+#  Make File
+#
+#  Project : Strategic ECAM HIDAC Board
+#  System  : Test Software
+#
+#  Created :
+#     31 Mar 10
+#        Dave Smail @ BT
+#  Revised :
+#    [DD MMM YY]
+#       [Author] @ [Location]
+#       [Details of change]
+#     21 Feb 2011
+#        Erik Holm
+#        Changed 'C166=X:' to 'C166=R:'
+#
+##---------------------------------------------------------------------------
+#
+# Any flags to be used in the compilation of all C programs should
+# be listed here.  (Separate each by a space)
+#
+# CFLAGS for Softscope debugging are:
+#    . DEBUG
+#    . TYPE
+#    . SYMBOLS
+#
+#   [COMPILER FLAG  Detailed definition]
+#
+##---------------------------------------------------------------------------
+#
+# USAGE:
+#               make clean
+#               make c167crc.hex
+#
+##---------------------------------------------------------------------------
+
+#==================================================================================== 
+# OUTPUT_DIR is a macro that MUST be defined on the command line or in a batch file.
+# It is the location where .h files and the .lib file will be copied. Should be a unique
+# directory that is different from the application code.
+#
+# Example:
+#	make OUTPUT_DIR=D:\ECAM\Code\HidacDrv c167.lib
+#==================================================================================== 
+
+#==================================================================================== 
+# Altium/BSO Tasking location
+#==================================================================================== 
+
+C166=G:\us\pi\tcctools\Engtools\c16685r1
+
+
+#==================================================================================== 
+# Compiler Definitions
+#==================================================================================== 
+
+CMPL=$(C166)\bin\cc166.exe
+
+
+#==================================================================================== 
+# Macro Preprocessor executable path
+#==================================================================================== 
+
+MAC=$(C166)\bin\m166.exe
+
+
+#==================================================================================== 
+# Assembler Definitions
+#==================================================================================== 
+
+ASSM=$(C166)\bin\a166.exe
+
+
+#==================================================================================== 
+# Include path
+#==================================================================================== 
+
+INC_PATH=$(C166)\include
+
+
+#==================================================================================== 
+# Linker Definitions
+#==================================================================================== 
+
+LINK=$(C166)\bin\l166.exe
+
+#==================================================================================== 
+# Linker Definitions
+#==================================================================================== 
+
+LIBRARY=$(C166)\bin\ar166.exe
+
+#==================================================================================== 
+# Compiler Options
+#==================================================================================== 
+
+# For Car Controller flags, add any -Ddefinitions for any #defines used in the code.
+CCFLAGS = -D_C167 
+COPTS = -OfOpOI -s -T0 -Ml -x -g -err -w68 -OC -OR -c
+#COPTS = -c -Ml -w91 -O3 -WaEX -WaPR($*.lst) -x -g -s -err
+
+#==================================================================================== 
+# Assembler Options
+#==================================================================================== 
+
+AOPT = sg DEBUG SYMB EXTEND
+
+
+#==================================================================================== 
+# Definitions
+#==================================================================================== 
+
+RM = del
+MV = ren
+
+
+#====================================================================================
+# default .c.obj rules
+#====================================================================================
+
+.c.obj :
+     $(CMPL) -I$(INC_PATH) $(COPTS) $(CCFLAGS) $*.c
+#     $(CMPL) -I.. $(COPTS) $*.c
+#     $(ASSM) $*.src
+#     $(RM)   $*.src
+
+
+#====================================================================================
+# default .c.obj rules
+#====================================================================================
+
+.a66.obj :
+     $(MAC)  $*.a66 DEFINE(MODEL, LARGE)
+     $(ASSM) $*.src $(AOPT)
+     $(RM)   $*.src
+
+
+##===================================================================================
+# This is a list of all the files that must be updated to generate a new
+# executable.
+##===================================================================================
+
+OBJECTS =               \
+	    cstart.obj      \
+	    sercomm.obj     \
+        chartrec.obj    \
+	    analogin.obj    \
+	    alogout.obj		\
+	    timer.obj       \
+	    digout.obj      \
+	    digin.obj       \
+		pwmout.obj      \
+		pwmin.obj       \
+	    datetime.obj    \
+	    mainC167.obj    
+
+OBJECTSLIB =            \
+	    sercomm.obj     \
+        chartrec.obj    \
+	    analogin.obj    \
+	    alogout.obj		\
+	    timer.obj       \
+	    digout.obj      \
+	    digin.obj       \
+		pwmout.obj      \
+		pwmin.obj       \
+	    datetime.obj    \
+	    hidacver.obj			
+
+
+#==================================================================================== 
+# Pointer to libraries
+#==================================================================================== 
+
+LIBS = $(C166)\lib\extp\c166l.lib
+
+
+##===================================================================================
+# Link and locate commands
+##===================================================================================
+
+LINKLNO = $(LINK) @c167Lib.lnk $(LIBS) TO Hidac.lno
+LINKLIB = $(LIBRARY) r Hidac.lib *.obj
+LINKROM = $(LINK) LINK @c167.lnk $(LIBS) TO c167.lno
+LOCROM =  $(LINK) LOCATE lsy @c167.rom NOCC print(c167.mp2)
+
+
+#===================== 
+# the dependencies       [list the *.h & *.c file dependencies separated by a space]
+#=====================
+
+cstart.obj : cstart.a66
+
+
+
+
+#===================== 
+# Builds
+#=====================
+
+
+c167.hex : $(OBJECTS) c167.lnk c167.rom makefile
+	   $(LINKROM)
+	   $(LOCROM)
+	   $(C166)\bin\ihex166.exe c167.out c167.hex
+
+
+c167.lno : $(OBJECTSLIB) c167lib.lnk makefile
+	   $(LINKLNO)
+
+
+c167.lib : $(OBJECTSLIB) makefile
+	   $(LINKLIB)
+       copy hidac.lib $(OUTPUT_DIR)
+	   copy *.h $(OUTPUT_DIR) /y
+
+clean      : 
+		-$(MV) c167.hex c167.old
+		-$(MV) c167crc.hex c167crc.old
+		-$(RM) *.obj
+		-$(RM) *.lst
+		-$(RM) *.err
+		-$(RM) *.lno
+		-$(RM) *.lib
+		-$(RM) *.mp2

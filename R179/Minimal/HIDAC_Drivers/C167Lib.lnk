@@ -1,0 +1,12 @@
+sercomm.obj
+analogin.obj
+alogout.obj
+timer.obj
+chartrec.obj
+digout.obj
+digin.obj
+pwmout.obj
+pwmin.obj
+datetime.obj
+hidacver.obj
+
