@@ -275,7 +275,7 @@ UINT_16 u35_tach_reader_1;
 UINT_16 u35_tach_reader_2;
 UINT_16 u34_tach_reader_1;
 UINT_16 u34_tach_reader_2;
-
+UINT_16 consecutiveFailureCount;
 
 /*--------------------------------------------------------------------------
                              MODULE PROTOTYPES
@@ -321,6 +321,8 @@ void BurnInCode (void)
     /* Initialize variables */
     burnin_error_code = 0;
 
+	consecutiveFailureCount = 0;
+
 	DebugPrintSoftwareVersion();
     BurnInInitAnalogs();
 
@@ -333,8 +335,8 @@ void BurnInCode (void)
 	
 	burninConfig = TRUE;
 
-    /* Stay in this loop until a test fails */
-    while (burnin_error_code == 0)
+    /* Stay in this loop until 3 consecutive failures (of any type) occur */
+    while (consecutiveFailureCount < 3)
     {
 #ifdef CONTINUOUS
         HexLEDUpdate (0x02);
@@ -352,42 +354,71 @@ void BurnInCode (void)
 		HexLEDUpdate (0x07);
         BurninMvbTest();
 #else
+		// Reset the string, the software can only record the latest error prior to aborting burnin
 		failureStr[0] = 0;
+		burnin_error_code = 0;
         HexLEDUpdate (0x02);
         /* Test the ability to turn on and off both VDrives (SSR_OUTs) */
         if (burnin_error_code == 0)
         {
             BurninVDriveTest();
         }
-        HexLEDUpdate (0x03);
+		else
+		{
+			consecutiveFailureCount++;
+		}
+        
+		HexLEDUpdate (0x03);
         /* Test all digital outputs and inputs */
         if (burnin_error_code == 0)
         {
             BurninDigitalTests();
         }
-        HexLEDUpdate (0x04);
+		else
+		{
+			consecutiveFailureCount++;
+		}
+
+		HexLEDUpdate (0x04);
         if (burnin_error_code == 0)
         {
             BurninDigitalTests2();
         }
+		else
+		{
+			consecutiveFailureCount++;
+		}
+
         HexLEDUpdate (0x05);
         /* Test the analog inputs by driving the chart recorder outputs */
         if (burnin_error_code == 0)
         {
             BurninAnalogTests();
         }
+		else
+		{
+			consecutiveFailureCount++;
+		}
+
+
         HexLEDUpdate (0x07);
 		GiveSettleTime ();
         if (burnin_error_code == 0)
         {
             BurninMvbTest();
         }
+		else
+		{
+			consecutiveFailureCount++;
+		}
 
         if (burnin_error_code == 0)
         {
 			SC_PutsAlways ("--- BurnIn Test iteration complete... ");
 			sprintf (str,"%d without failures\n\r",++iteration);
 			SC_PutsAlways (str);
+			// Made it through an entire test cycle without a failure so reset the consecutive failure count 
+			consecutiveFailureCount = 0;
 		}
 #endif
     }
@@ -935,109 +966,110 @@ static void BurninAnalogTests (void)
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     static const BurninAlog_t alogBurnTest[] =
     {
+		// Tolerance is +/- 5% (51 quanta from 10 bit ADC (0 - 1023 quanta)
         {
             &burninDAC[0], 2400, &burninDAC[1], 1000,
-            632 - 30, 632 + 30, ANALOGIN_04, 0xC0
+            632 - 51, 632 + 51, ANALOGIN_04, 0xC0
         },
         {
             &burninDAC[0], 1000, &burninDAC[1], 2400,
-            381 - 30, 381 + 30, ANALOGIN_04, 0xC1
+            381 - 51, 381 + 51, ANALOGIN_04, 0xC1
         },
         {
             &burninDAC[0], 2400, &burninDAC[1], 1000,
-            632 - 30, 632 + 30, ANALOGIN_05, 0xC2
+            632 - 51, 632 + 51, ANALOGIN_05, 0xC2
         },
         {
             &burninDAC[0], 1000, &burninDAC[1], 2400,
-            381 - 30, 381 + 30, ANALOGIN_05, 0xC3
+            381 - 51, 381 + 51, ANALOGIN_05, 0xC3
         },
         {
             &burninDAC[0], 2400, &burninDAC[1], 1000,
-            531 - 30, 531 + 30, ANALOGIN_06, 0xC4
+            531 - 51, 531 + 51, ANALOGIN_06, 0xC4
         },
         {
             &burninDAC[0], 1000, &burninDAC[1], 2400,
-            121 - 30, 121 + 30, ANALOGIN_06, 0xC5
+            121 - 51, 121 + 51, ANALOGIN_06, 0xC5
         },
         {
             &burninDAC[2], 2400, &burninDAC[3], 1000,
-            531 - 30, 531 + 30, ANALOGIN_07, 0xC6
+            531 - 51, 531 + 51, ANALOGIN_07, 0xC6
         },
         {
             &burninDAC[2], 1000, &burninDAC[3], 2400,
-            121 - 30, 121 + 30, ANALOGIN_07, 0xC7
+            121 - 51, 121 + 51, ANALOGIN_07, 0xC7
         },
         {
             &burninDAC[2], 1000, &burninDAC[3], 2400,
-            491 - 30, 491 + 30, ANALOGIN_08, 0xC8
+            491 - 51, 491 + 51, ANALOGIN_08, 0xC8
         },
         {
             &burninDAC[2], 2400, &burninDAC[3], 1000,
-            729 - 30, 729 + 30, ANALOGIN_08, 0xC9
+            729 - 51, 729 + 51, ANALOGIN_08, 0xC9
         },
         {
             &burninDAC[2], 1000, &burninDAC[3], 2400,
-            491 - 30, 491 + 30, ANALOGIN_09, 0xCA
+            491 - 51, 491 + 51, ANALOGIN_09, 0xCA
         },
         {
             &burninDAC[2], 2400, &burninDAC[3], 1000,
-            729 - 30, 729 + 30, ANALOGIN_09, 0xCB
+            729 - 51, 729 + 51, ANALOGIN_09, 0xCB
         },
         {
             &burninDAC[4], 5000, &burninDAC[5], 1000,
-            795 - 30, 795 + 30, ANALOGIN_11, 0xCC
+            795 - 51, 795 + 51, ANALOGIN_11, 0xCC
         },
         {
             &burninDAC[4], 1000, &burninDAC[5], 5000,
-            108 - 30, 108 + 30, ANALOGIN_11, 0xCD
+            108 - 51, 108 + 51, ANALOGIN_11, 0xCD
         },
         {
             &burninDAC[4], 5000, &burninDAC[5], 1000,
-            795 - 30, 795 + 30, ANALOGIN_12, 0xCE
+            795 - 51, 795 + 51, ANALOGIN_12, 0xCE
         },
         {
             &burninDAC[4], 1000, &burninDAC[5], 5000,
-            108 - 30, 108 + 30, ANALOGIN_12, 0xCF
+            108 - 51, 108 + 51, ANALOGIN_12, 0xCF
         },
         {
             &burninDAC[4], 5000, &burninDAC[5], 1000,
-            795 - 30, 795 + 30, ANALOGIN_13, 0xD0
+            795 - 51, 795 + 51, ANALOGIN_13, 0xD0
         },
         {
             &burninDAC[4], 1000, &burninDAC[5], 5000,
-            108 - 30, 108 + 30, ANALOGIN_13, 0xD1
+            108 - 51, 108 + 51, ANALOGIN_13, 0xD1
         },
         {
             &burninDAC[6], 2400, &burninDAC[7], 1000,
-            632 - 30, 632 + 30, ANALOGIN_00, 0xD2
+            632 - 51, 632 + 51, ANALOGIN_00, 0xD2
         },
         {
             &burninDAC[6], 1000, &burninDAC[7], 2400,
-            381 - 30, 381 + 30, ANALOGIN_00, 0xD3
+            381 - 51, 381 + 51, ANALOGIN_00, 0xD3
         },
         {
             &burninDAC[6], 2400, &burninDAC[7], 1000,
-            632 - 30, 632 + 30, ANALOGIN_01, 0xD4
+            632 - 51, 632 + 51, ANALOGIN_01, 0xD4
         },
         {
             &burninDAC[6], 1000, &burninDAC[7], 2400,
-            381 - 30, 381 + 30, ANALOGIN_01, 0xD5
+            381 - 51, 381 + 51, ANALOGIN_01, 0xD5
         },
         {
             &burninDAC[6], 2400, &burninDAC[7], 1000,
-            632 - 30, 632 + 30, ANALOGIN_02, 0xD6
+            632 - 51, 632 + 51, ANALOGIN_02, 0xD6
         },
         {
             &burninDAC[6], 1000, &burninDAC[7], 2400,
-            381 - 30, 381 + 30, ANALOGIN_02, 0xD7
+            381 - 51, 381 + 51, ANALOGIN_02, 0xD7
         },
         {
             &burninDAC[6], 2400, &burninDAC[7], 1000,
-            632 - 30, 632 + 30, ANALOGIN_03, 0xD8
+            632 - 51, 632 + 51, ANALOGIN_03, 0xD8
         },
         {
             &burninDAC[6], 1000, &burninDAC[7], 2400,
-            381 - 30, 381 + 30, ANALOGIN_03, 0xD9
+            381 - 51, 381 + 51, ANALOGIN_03, 0xD9
         },
     };
 
