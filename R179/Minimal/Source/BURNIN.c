@@ -319,8 +319,6 @@ void BurnInCode (void)
 	SC_PutsAlways ("\n\r\n\r\n\r");
 
     /* Initialize variables */
-    burnin_error_code = 0;
-
 	consecutiveFailureCount = 0;
 
 	DebugPrintSoftwareVersion();
@@ -363,10 +361,6 @@ void BurnInCode (void)
         {
             BurninVDriveTest();
         }
-		else
-		{
-			consecutiveFailureCount++;
-		}
         
 		HexLEDUpdate (0x03);
         /* Test all digital outputs and inputs */
@@ -374,20 +368,12 @@ void BurnInCode (void)
         {
             BurninDigitalTests();
         }
-		else
-		{
-			consecutiveFailureCount++;
-		}
 
 		HexLEDUpdate (0x04);
         if (burnin_error_code == 0)
         {
             BurninDigitalTests2();
         }
-		else
-		{
-			consecutiveFailureCount++;
-		}
 
         HexLEDUpdate (0x05);
         /* Test the analog inputs by driving the chart recorder outputs */
@@ -395,10 +381,6 @@ void BurnInCode (void)
         {
             BurninAnalogTests();
         }
-		else
-		{
-			consecutiveFailureCount++;
-		}
 
 
         HexLEDUpdate (0x07);
@@ -407,10 +389,6 @@ void BurnInCode (void)
         {
             BurninMvbTest();
         }
-		else
-		{
-			consecutiveFailureCount++;
-		}
 
         if (burnin_error_code == 0)
         {
@@ -478,7 +456,7 @@ void BurnInISR (void)
 
     scheduler_counter++;
 
-	if (burnin_error_code == 0)
+	if (consecutiveFailureCount < 3)
 	{
 		/* Toggle the LED on the Burn-In box every 768 msecs */
 		if (scheduler_counter == 0x80)
@@ -775,6 +753,7 @@ static void BurninDigitalTests (void)
 
             /* An error code was detected, set the error code and return */
             burnin_error_code = digTest[i].errorId;
+			consecutiveFailureCount++;
             DO_ResetBitWithId (digTest[i].outBit);
 #ifndef CONTINUOUS
 			return;
@@ -793,6 +772,7 @@ static void BurninDigitalTests (void)
         {
             /* An error code was detected, set the error code and return */
             burnin_error_code = digTest[i].errorId + LOW_SIDE_ERROR;
+			consecutiveFailureCount++;
 
             /* Set the Outputs to minimize current draw in the burn-in box resistor */
             DO_SetBitWithId (digTest[i].outBit);
@@ -824,10 +804,12 @@ static void BurninDigitalTests (void)
             if (drv9)
             {
                 burnin_error_code = (UINT_8)(ERR_DIGITAL_IO_21);
+				consecutiveFailureCount++;
             }
             else
             {
                 burnin_error_code = (UINT_8)(ERR_DIGITAL_IO_21) + (UINT_8)(LOW_SIDE_ERROR);
+				consecutiveFailureCount++;
             }
 #ifndef CONTINUOUS
 			return;
@@ -917,6 +899,7 @@ static void BurninVDriveTest (void)
 
             /* Failure occurred; report and exit immediately */
             burnin_error_code = vdrive[index].errorCode;
+			consecutiveFailureCount++;
 
 			DO_ResetBitWithId (SSR_IN1);
 			DO_ResetBitWithId (SSR_IN2);
@@ -1116,6 +1099,7 @@ static void BurninAnalogTests (void)
         if (analog_value < min || analog_value > max)
         {
             burnin_error_code = ptr->errCode;
+			consecutiveFailureCount++;
 			SC_PutsAlways ("********Above Analog Test Failed*********\n\r");
 #ifdef HALT_TEST
 			SC_PutsAlways ("Hit any key to continue\n\r");
@@ -1138,19 +1122,22 @@ static void BurninAnalogTests (void)
     if (Get15VoltBad() & PLUS_15_BAD_MASK)
     {
         burnin_error_code = PS_PLUS_15_ERR;
+		consecutiveFailureCount++;
         return;
     }
 
     if (Get15VoltBad() & MINUS_15_BAD_MASK)
     {
         burnin_error_code = PS_MINUS_15_ERR;
-        return;
+		consecutiveFailureCount++;
+		return;
     }
 
 	// Check VDrive status
     if (!(DI_GetCurrent(DIGIN_BANK0) & 0x0001))
     {
         burnin_error_code = VDRIVE_PLUS_15_ERR;
+		consecutiveFailureCount++;
         return;
     }
     /*****************************/
@@ -1172,6 +1159,7 @@ static void BurninAnalogTests (void)
     if ((analog_value < 860) || (analog_value > 917))
     {
         burnin_error_code = BATTERY_VOLTAGE_ERR;
+		consecutiveFailureCount++;
         return;
     }
 
@@ -1239,6 +1227,7 @@ static void BurninDigitalTests2 (void)
 
             /* An error code was detected, set the error code and return */
             burnin_error_code = digTest[i].errorId;
+			consecutiveFailureCount++;
             DO_ResetBitWithId (digTest[i].outBit);
 #ifndef CONTINUOUS
 			return;
@@ -1257,7 +1246,7 @@ static void BurninDigitalTests2 (void)
         {
             /* An error code was detected, set the error code and return */
             burnin_error_code = digTest[i].errorId + 10;
-
+			consecutiveFailureCount++;
             /* Set the Outputs to minimize current draw in the burn-in box resistor */
             DO_SetBitWithId (digTest[i].outBit);
 #ifndef CONTINUOUS
@@ -1341,6 +1330,7 @@ static void BurninMvbTest (void)
     if (counterIncremented == FALSE)
     {
         burnin_error_code = MVB_ERR;
+		consecutiveFailureCount++;
         expiredTime = TM_GetExpiredTime (tm2);
         sprintf (str, "Expired time= %d\n \r", expiredTime);
 		strcat(failureStr, str);
