@@ -16,7 +16,6 @@ spareisr.obj
 TaskMVB.obj
 Mvbvar.obj
 Pil_def.obj
-Version.obj
 Pwm.obj
 ..\..\tcn\mvb\install\hidac\boards\c167\colib.lib
 ..\..\tcn\mvb\install\hidac\boards\c167\lclib.lib
@@ -25,4 +24,5 @@ Pwm.obj
 ..\..\tcn\mvb\install\hidac\boards\c167\mdlib3.lib
 ..\..\tcn\mvb\install\hidac\boards\c167\pdlib1.lib
 ..\..\tcn\mvb\install\hidac\boards\c167\pdlib2.lib
+Version.obj
 
