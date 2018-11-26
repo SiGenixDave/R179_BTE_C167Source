@@ -15,90 +15,84 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\AlogOut.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\AlogOut.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\AnalogIn.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\AnalogIn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\ChartRec.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\ChartRec.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\DateTime.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\DateTime.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\DigIn.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\DigIn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\DigOut.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\DigOut.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\HidacVer.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\HidacVer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\PwmIn.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\PwmIn.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\PwmOut.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\PwmOut.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\SerComm.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\SerComm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\R179\Minimal\HIDAC_Drivers\Timer.c">
+    <ClCompile Include="..\Minimal\HIDAC_Drivers\Timer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\AlogOut.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\AlogOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\AnalogIn.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\AnalogIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\ChartRec.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\ChartRec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\DateTime.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\DateTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\DigIn.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\DigIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\DigOut.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\DigOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\HidacVer.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\HidacVer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\PwmIn.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\PwmIn.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\PwmOut.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\PwmOut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\SerComm.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\SerComm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\Timer.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\R179\Minimal\HIDAC_Drivers\types.h">
+    <ClInclude Include="..\Minimal\HIDAC_Drivers\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\R179\Minimal\HIDAC_Drivers\MAKEFILE">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\R179\Minimal\HIDAC_Drivers\MAKE.EXE">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\R179\Minimal\HIDAC_Drivers\C167Lib.lnk">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\R179\Minimal\HIDAC_Drivers\driver.bat">
-      <Filter>Resource Files</Filter>
+    <None Include="..\Minimal\HIDAC_Drivers\C167Lib.lnk" />
+    <None Include="..\Minimal\HIDAC_Drivers\MAKE.EXE" />
+    <None Include="..\Minimal\HIDAC_Drivers\MAKEFILE" />
+    <None Include="..\Minimal\HIDAC_Drivers\driver.bat">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

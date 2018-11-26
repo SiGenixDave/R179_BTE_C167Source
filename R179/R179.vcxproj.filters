@@ -16,6 +16,9 @@
     <Filter Include="Source Files\HidacDrv">
       <UniqueIdentifier>{09abf4a8-2caf-4dfb-804d-ec4aa5b7bbf8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Docs">
+      <UniqueIdentifier>{8b06694b-3ea2-4dd3-a7cd-8a40afae7e0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Minimal\Source\CRC.C">
@@ -54,9 +57,6 @@
     <ClCompile Include="Minimal\Source\IPack.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Minimal\Source\BURNIN.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Minimal\Source\Digital.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -67,6 +67,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Minimal\Source\Version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\Flash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,9 +152,6 @@
     <ClInclude Include="Minimal\Source\Ipack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Minimal\Source\BurnIn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Minimal\Source\Analog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -210,6 +210,9 @@
     </None>
     <None Include="Minimal\Source\BuildAppSw.bat">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Docs\R179 HiDac BTE Requirements.docx">
+      <Filter>Docs</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -15,29 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\colib.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\lclib.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\mdlib1.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\mdlib2.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\mdlib3.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\pdlib1.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\pdlib2.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
-    <Library Include="..\R179\MVB\lib\hidac.lib">
-      <Filter>Resource Files</Filter>
-    </Library>
+    <Library Include="..\MVB\lib\hidac.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\colib.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\lclib.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\mdlib1.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\mdlib2.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\mdlib3.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\pdlib1.lib" />
+    <Library Include="..\TCN\MVB\INSTALL\HIDAC\BOARDS\C167\pdlib2.lib" />
   </ItemGroup>
 </Project>

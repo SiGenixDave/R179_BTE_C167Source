@@ -13,7 +13,7 @@
 #define interrupt_C
 
 /*--------------------------------------------------------------------------
-                              INCLUDE FILES
+							  INCLUDE FILES
   --------------------------------------------------------------------------*/
 #ifndef _DEBUG
 #include <c166.h>
@@ -27,38 +27,36 @@
 #include "VEC_TBL.h"
 #include "TaskMVB.h"
 #include "Pwm.h"
-#include "BurnIn.h"
 #include "Debug.h"
 
+  /*--------------------------------------------------------------------------
+							   MODULE CONSTANTS
+	--------------------------------------------------------------------------*/
 
-/*--------------------------------------------------------------------------
-                             MODULE CONSTANTS
-  --------------------------------------------------------------------------*/
+	/*--------------------------------------------------------------------------
+								  MODULE MACROS
+	  --------------------------------------------------------------------------*/
 
-/*--------------------------------------------------------------------------
-                              MODULE MACROS
-  --------------------------------------------------------------------------*/
+	  /*--------------------------------------------------------------------------
+								   MODULE DATA TYPES
+		--------------------------------------------------------------------------*/
 
-/*--------------------------------------------------------------------------
-                             MODULE DATA TYPES
-  --------------------------------------------------------------------------*/
+		/*--------------------------------------------------------------------------
+									  MODULE VARIABLES
+		  --------------------------------------------------------------------------*/
 
-/*--------------------------------------------------------------------------
-                              MODULE VARIABLES
-  --------------------------------------------------------------------------*/
+		  /*--------------------------------------------------------------------------
+									   MODULE PROTOTYPES
+			--------------------------------------------------------------------------*/
 
-/*--------------------------------------------------------------------------
-                             MODULE PROTOTYPES
-  --------------------------------------------------------------------------*/
-
-/*----------------------------------------------------------------------------
-*  Module:
-*   CpuLoadMeasureISR
-*
-*     This function is TODO
-*
-----------------------------------------------------------------------------*/
-interrupt (CAPCOM_TIMER_0) using (CPU_LOAD_MEASURE_RB) void CpuLoadMeasureISR (void)
+			/*----------------------------------------------------------------------------
+			*  Module:
+			*   CpuLoadMeasureISR
+			*
+			*     This function is TODO
+			*
+			----------------------------------------------------------------------------*/
+interrupt(CAPCOM_TIMER_0) using (CPU_LOAD_MEASURE_RB) void CpuLoadMeasureISR(void)
 {
 	StopTimer0();
 	DebugCalculateCpuLoad();
@@ -73,60 +71,42 @@ interrupt (CAPCOM_TIMER_0) using (CPU_LOAD_MEASURE_RB) void CpuLoadMeasureISR (v
 *     1 has expired (interrupt service routine).
 *
 ----------------------------------------------------------------------------*/
-interrupt (CAPCOM_TIMER_1) using (SCHEDULE_RB) void SchedulerISR (void)
+interrupt(CAPCOM_TIMER_1) using (SCHEDULE_RB) void SchedulerISR(void)
 {
 	BOOLEAN taskMVBAlive = FALSE;
 
-    /* Service Vdrive Watchdog */
-    ServiceVDriveWatchdog();
-
-	/* Monitor the MVB 8 ms interrupt. Allow 5 consecutive dead interrupts
-	   before declaring interrupt dead and forcing a CPU reset */
-	if (GetStartupSuccessful() == TRUE)
-	{
-		taskMVBAlive = MonitorMVBInterrupt (5);
-		if (!taskMVBAlive)
-		{
-			SetCPUDisable (TASK_MVB_DEAD);
-		}
-	}
+	/* Service Vdrive Watchdog */
+	ServiceVDriveWatchdog();
 
 	/* Service CPU watchdog. Note: Logic exists in this function to disable
 		servicing watchdog if above check fails */
 	ServiceCPUWatchdog();
 
-    /* -------------------------------------------------------------------------
-    Service the timers. CLOCK_TICK should be updated in "timer.h"
-    to reflect the periodicity of this interrupt.
-    ------------------------------------------------------------------------- */
-    TM_Service();
+	/* -------------------------------------------------------------------------
+	Service the timers. CLOCK_TICK should be updated in "timer.h"
+	to reflect the periodicity of this interrupt.
+	------------------------------------------------------------------------- */
+	TM_Service();
 
-	 _nop();
-
+	_nop();
 }
 
 /*----------------------------------------------------------------------------
   Module:
-    ISR to service Vehicle related task including the PTU
+	ISR to service Vehicle related task including the PTU
 
-     This function is automatically invoked by the C167 when Timer
-     7 has expired (interrupt service routine).
+	 This function is automatically invoked by the C167 when Timer
+	 7 has expired (interrupt service routine).
 
 --------------------------------------------------------------------------  */
-interrupt (CAPCOM_TIMER_7) using (VEHICLECONTROLISR_RB) void VehicleControlISR (void)
+interrupt(CAPCOM_TIMER_7) using (VEHICLECONTROLISR_RB) void VehicleControlISR(void)
 {
-	// ONLY USE FOR CPU LOAD VERIFICATION --- HIDAC_FAIL_LED_ON();
-	if (GetBurninConfig () == TRUE)
+	if (GetStartupSuccessful() == TRUE)
 	{
-		BurnInISR ();
+		Task8ms();
 	}
-    else if (GetStartupSuccessful() == TRUE)
-    {
-        Task8ms();
-    }
 	// ONLY USE FOR CPU LOAD VERIFICATION --- HIDAC_FAIL_LED_OFF();
 	_nop();
-
 }
 
 /*----------------------------------------------------------------------------
@@ -137,12 +117,12 @@ interrupt (CAPCOM_TIMER_7) using (VEHICLECONTROLISR_RB) void VehicleControlISR (
 *     is deemed to be inadequate.
 *
 ----------------------------------------------------------------------------*/
-interrupt (CAPCOM_REGISTER_15) using (FIFTEEN_V_RB) void BadPlus15VISR (void)
+interrupt(CAPCOM_REGISTER_15) using (FIFTEEN_V_RB) void BadPlus15VISR(void)
 {
-    SetFifteenVoltBad (PLUS_15_BAD_MASK);
+	SetFifteenVoltBad(PLUS_15_BAD_MASK);
 
-    /* Disable this ISR */
-    CC15IC = 0;
+	/* Disable this ISR */
+	CC15IC = 0;
 }
 
 /*----------------------------------------------------------------------------
@@ -153,14 +133,13 @@ interrupt (CAPCOM_REGISTER_15) using (FIFTEEN_V_RB) void BadPlus15VISR (void)
 *     is deemed to be inadequate.
 *
 --------------------------------------------------------------------------- */
-interrupt (CAPCOM_REGISTER_14) using (FIFTEEN_V_RB) void BadMinus15VISR (void)
+interrupt(CAPCOM_REGISTER_14) using (FIFTEEN_V_RB) void BadMinus15VISR(void)
 {
-    SetFifteenVoltBad (MINUS_15_BAD_MASK);
+	SetFifteenVoltBad(MINUS_15_BAD_MASK);
 
-    /* Disable this ISR */
-    CC14IC = 0;
+	/* Disable this ISR */
+	CC14IC = 0;
 }
-
 
 /*----------------------------------------------------------------------------
 *  Module:
@@ -170,15 +149,12 @@ interrupt (CAPCOM_REGISTER_14) using (FIFTEEN_V_RB) void BadMinus15VISR (void)
 *   CAPCOM timer is equal to the value of the CAPCOM23 (CC23) register.
 *
 --------------------------------------------------------------------------- */
-interrupt (CAPCOM_REGISTER_23) using (CAPCOM_RB) void Capcom23ISR (void)
+interrupt(CAPCOM_REGISTER_23) using (CAPCOM_RB) void Capcom23ISR(void)
 {
+	DISABLE_ALL_INTERRUPTS();
 
-    DISABLE_ALL_INTERRUPTS();
-
-    ENABLE_ALL_INTERRUPTS();
-
+	ENABLE_ALL_INTERRUPTS();
 }
-
 
 /*----------------------------------------------------------------------------
 *  Module:
@@ -188,8 +164,7 @@ interrupt (CAPCOM_REGISTER_23) using (CAPCOM_RB) void Capcom23ISR (void)
 *     is made active low by the U41 CPLD.
 *
 ----------------------------------------------------------------------------*/
-interrupt (CAPCOM_REGISTER_10) using (PWMIN1_RB) void PWMIn1ISR (void)
+interrupt(CAPCOM_REGISTER_10) using (PWMIN1_RB) void PWMIn1ISR(void)
 {
 	PWMInputIsr1();
 }
-

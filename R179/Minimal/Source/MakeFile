@@ -136,10 +136,10 @@ MV = ren
 OBJECTS =			\
 	cstart.obj		\
 	analog.obj      \
-	burnin.obj		\
 	crc.obj			\
 	debug.obj		\
 	digital.obj		\
+	flash.obj		\
 	hexled.obj		\
 	hwinit.obj		\
 	interupt.obj	\
@@ -185,8 +185,8 @@ r179.hex : $(OBJECTS) r179.lnk r179.rom makefile
 	   $(LINKROM)
 	   $(LOCROM)
 # -r is needed in order to be compatible with Bombardier C167 FLASH programming tool
-        G:\us\pi\tcctools\Engtools\c16685r1\bin\ihex166.exe -r -EFF r179.out r179.hex
-        gpcrcg config.crc
+	   G:\us\pi\tcctools\Engtools\c16685r1\bin\ihex166.exe -r -EFF r179.out r179.hex
+#TODO        gpcrcg config.crc
 
 
 r179burn.hex : $(OBJECTS) r179.lnk r179.rom makefile

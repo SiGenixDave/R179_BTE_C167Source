@@ -2,10 +2,10 @@ heapsize(16384)
 
 analog.obj
 cstart.obj
-burnin.obj
 crc.obj
 debug.obj
 digital.obj
+flash.obj
 hexled.obj
 hwinit.obj
 interupt.obj
