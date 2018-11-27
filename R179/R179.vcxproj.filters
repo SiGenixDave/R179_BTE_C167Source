@@ -214,5 +214,8 @@
     <None Include="Docs\R179 HiDac BTE Requirements.docx">
       <Filter>Docs</Filter>
     </None>
+    <None Include="Minimal\Source\R179BTEInsertFlashBlock.exe">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

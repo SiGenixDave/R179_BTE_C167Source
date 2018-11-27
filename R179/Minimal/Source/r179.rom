@@ -13,6 +13,7 @@ re(me(0f200h to 0f5ffh))
 memory (ram(0f000h  to 0ffffh))        ;RAM/SFR area
 memory (ram(200000h to 23ffffh))       ;CS1 sram
 re(me(010000h to 0fffffh))             ;unused area between iram and CS0 eprom
+re(me(0110000h to 01100ffh))           ;stores walking 0's and walking 1's
 re(me(0140000h to 01fffffh))           ;unused area between eprom and CS1 ram
 ;memory (ram(300000h to 307fffh))      ;CS2 RTC backup ram
 ;memory (ram(400000h to 401fffh))      ;CS2 dpram

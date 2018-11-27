@@ -76,6 +76,7 @@
     <None Include="Minimal\Source\MakeFile" />
     <None Include="Minimal\Source\r179.lnk" />
     <None Include="Minimal\Source\r179.rom" />
+    <None Include="Minimal\Source\R179BTEInsertFlashBlock.exe" />
     <None Include="Minimal\Source\Version.exe" />
     <None Include="Minimal\Source\VersionInfo.txt" />
   </ItemGroup>

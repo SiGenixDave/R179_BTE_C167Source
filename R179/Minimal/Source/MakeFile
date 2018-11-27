@@ -186,6 +186,7 @@ r179.hex : $(OBJECTS) r179.lnk r179.rom makefile
 	   $(LOCROM)
 # -r is needed in order to be compatible with Bombardier C167 FLASH programming tool
 	   G:\us\pi\tcctools\Engtools\c16685r1\bin\ihex166.exe -r -EFF r179.out r179.hex
+	   R179BTEInsertFlashBlock.exe
 #TODO        gpcrcg config.crc
 
 
