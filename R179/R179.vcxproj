@@ -25,6 +25,7 @@
     <ClCompile Include="Minimal\Source\PIL_DEF.C" />
     <ClCompile Include="Minimal\Source\Pwm.c" />
     <ClCompile Include="Minimal\Source\RAM.C" />
+    <ClCompile Include="Minimal\Source\RAMTest.C" />
     <ClCompile Include="Minimal\Source\SPAREISR.c" />
     <ClCompile Include="Minimal\Source\TaskMVB.c" />
     <ClCompile Include="Minimal\Source\Version.c" />
@@ -55,6 +56,7 @@
     <ClInclude Include="Minimal\Source\mvbvar.h" />
     <ClInclude Include="Minimal\Source\Pwm.h" />
     <ClInclude Include="Minimal\Source\RAM.h" />
+    <ClInclude Include="Minimal\Source\RAMTest.h" />
     <ClInclude Include="Minimal\Source\TaskMvb.h" />
     <ClInclude Include="Minimal\Source\tcn.h" />
     <ClInclude Include="Minimal\Source\tcn_api.h" />

@@ -1,286 +1,118 @@
-/******************************************************************************
-*
-* Copyright (C) 2014-15 Bombardier
-*
-* File Name: RAM.c
-*
-* Revision History:
-*   08/31/2014 - das - Created
-*
-******************************************************************************/
-///   \file
-///   This file contains the code that verifies the external RAM integrity.
-
-#define ram_C
-
-/*--------------------------------------------------------------------------
-                              INCLUDE FILES
-  --------------------------------------------------------------------------*/
-#ifndef _DEBUG
-#include <reg167.h>
-#endif
-
+/*
+ * Ram.c
+ *
+ *  Created on: Nov 21, 2018
+ *      Author: David Smail
+ */
 #include "Types.h"
-#include "SerComm.h"
-#include "HWInit.h"
-#include "HexLED.h"
+#include "CmdProc.h"
 
-/*--------------------------------------------------------------------------
-                             MODULE CONSTANTS
-  --------------------------------------------------------------------------*/
-#ifndef _DEBUG
-#define HUGE huge
+typedef struct
+{
+    const UINT_16 addrOffset;
+    const UINT_16 data;
+    BOOLEAN enable;
+} UpdateTable;
+
+static UpdateTable m_Table[] =
+    {
+        { 0x00, 0x0000, FALSE },
+          { 0x00, 0x0001, FALSE },
+          { 0x00, 0x0002, FALSE },
+          { 0x00, 0x0004, FALSE },
+          { 0x00, 0x0008, FALSE },
+          { 0x00, 0x0010, FALSE },
+          { 0x00, 0x0020, FALSE },
+          { 0x00, 0x0040, FALSE },
+          { 0x00, 0x0080, FALSE },
+          { 0x00, 0x0100, FALSE },
+          { 0x00, 0x0200, FALSE },
+          { 0x00, 0x0400, FALSE },
+          { 0x00, 0x0800, FALSE },
+          { 0x00, 0x1000, FALSE },
+          { 0x00, 0x2000, FALSE },
+          { 0x00, 0x4000, FALSE },
+          { 0x00, 0x8000, FALSE },
+          { 0x00, 0xFFFF, FALSE },
+          { 0x00, 0xFFFE, FALSE },
+          { 0x00, 0xFFFD, FALSE },
+          { 0x00, 0xFFFB, FALSE },
+          { 0x00, 0xFFF7, FALSE },
+          { 0x00, 0xFFEF, FALSE },
+          { 0x00, 0xFFDF, FALSE },
+          { 0x00, 0xFFBF, FALSE },
+          { 0x00, 0xFF7F, FALSE },
+          { 0x00, 0xFEFF, FALSE },
+          { 0x00, 0xFDFF, FALSE },
+          { 0x00, 0xFBFF, FALSE },
+          { 0x00, 0xF7FF, FALSE },
+          { 0x00, 0xEFFF, FALSE },
+          { 0x00, 0xDFFF, FALSE },
+          { 0x00, 0xBFFF, FALSE },
+          { 0x00, 0x7FFF, FALSE },
+
+    };
+
+static const UINT_16 TABLE_SIZE = sizeof(m_Table) / sizeof(UpdateTable);
+
+void RamService (const char *str)
+{
+
+#ifdef _WIN32
+    UINT_16 debugBaseArray[100];
+    UINT_16 *baseAddress = debugBaseArray;
 #else
-#define HUGE
+    UINT_16 *baseAddress = (UINT_16 *)0x210000;
 #endif
 
-#ifndef _DEBUG
-#define RAM_START				(0x230000UL)
-#define RAM_END					(0x23FFFFUL)
-#define NVRAM_START				(0x800000UL)
-#define NVRAM_END				(0x80FFFFUL)
-#else
-UINT_16 memory[65536];
-#define RAM_START               (UINT_32)&memory[0]
-#define RAM_END					(UINT_32)&memory[2000 - 1]
-#define NVRAM_START             (UINT_32)&memory[0]
-#define NVRAM_END				(UINT_32)&memory[2000 - 1]
-#endif
+    UINT_16 actualValue;
+    UINT_16 expectedValue;
+    UINT_16 index;
 
-/*--------------------------------------------------------------------------
-                              MODULE MACROS
-  --------------------------------------------------------------------------*/
-
-/*--------------------------------------------------------------------------
-                             MODULE DATA TYPES
-  --------------------------------------------------------------------------*/
-typedef enum
-{
-    TEST_STUCK_DATA_RAM,
-    TEST_STUCK_DATA_NVRAM,
-    TEST_STUCK_ADDR_RAM,
-    TEST_STUCK_ADDR_NVRAM,
-    TEST_CELL_RAM,
-    TEST_CELL_NVRAM
-
-} eRuntimeRAMTestState;
-
-
-/*--------------------------------------------------------------------------
-                              MODULE VARIABLES
-  --------------------------------------------------------------------------*/
-
-/*--------------------------------------------------------------------------
-                             MODULE PROTOTYPES
-  --------------------------------------------------------------------------*/
-static BOOLEAN RAMCellTest (UINT_32 aBaseAddress);
-static BOOLEAN RAMStuckAddressTest (UINT_32 aBaseAddress);
-static BOOLEAN RAMStuckDataTest (UINT_32 aBaseAddress);
-
-//--------------------------------------------------------------------------
-// Module:
-//  VerifyRAM
-//
-///   This function executes the entire RAM test and verifies that
-///   RAM can be written to and read from without failure.
-///
-///   returns BOOLEAN - TRUE if test passed
-///
-//--------------------------------------------------------------------------
-BOOLEAN VerifyRAM (void)
-{
-	////////////////////////////////////////////////////////////////////////
-	// NOTE: NVRAM tests eliminated because NVRAM is not used on R179
-	////////////////////////////////////////////////////////////////////////
-	UINT_32 ramAddress = RAM_START;
-
-    HexLEDUpdate (0xCA);
-
-    if (!RAMStuckDataTest (RAM_START))
+    for (index = 0; index < TABLE_SIZE; index++)
     {
-        return FALSE;
-    }
-
-    if (!RAMStuckAddressTest (RAM_START))
-    {
-        return FALSE;
-    }
-
-    while (ramAddress < RAM_END)
-    {
-        if (!RAMCellTest (ramAddress))
+        if (m_Table[index].enable)
         {
-            return FALSE;
+            m_Table[index].enable = FALSE;
+            expectedValue = m_Table[index].data;
+            baseAddress[m_Table[index].addrOffset] = expectedValue;
+            actualValue = baseAddress[m_Table[index].addrOffset];
+            if (actualValue != expectedValue)
+            {
+                SendMismatchError (str, expectedValue, actualValue, BIT_WIDTH_8);
+            }
+            else
+            {
+                SendTestPassed (str, expectedValue, BIT_WIDTH_8);
+            }
         }
-        ramAddress += 2;
     }
-
-    return TRUE;
 }
 
-//--------------------------------------------------------------------------
-// Module:
-//  RAMCellTest
-//
-///   This function tests each memory cell and can detect a stuck or
-///   not connected data bit.
-///
-///   \param aBaseAddress - the memory address to test
-///
-///   returns BOOLEAN - TRUE if test passed
-///
-//--------------------------------------------------------------------------
-static BOOLEAN RAMCellTest (UINT_32 aBaseAddress)
+BOOLEAN RamTableUpdate (char cmdPtr[][MAX_PARAM_LENGTH])
 {
-    register UINT_16 *addr = (UINT_16 *)aBaseAddress;
+    BOOLEAN valid = FALSE;
+    UINT_32 tableIndex;
 
-    register UINT_16 ramOrigValue;
-
-    register BOOLEAN retVal = TRUE;
-
-    DISABLE_ALL_INTERRUPTS();
-    ToggleCPUWatchdog();
-
-    ramOrigValue = *addr;
-
-    *addr = 0x5555;
-    if (*addr != 0x5555)
+    if (!HexStringToValue (cmdPtr[1], &tableIndex))
     {
-        retVal = FALSE;
+        return (FALSE);
     }
 
-    *addr = 0xAAAA;
-    if (*addr != 0xAAAA)
+    if (tableIndex == 0x00FF)
     {
-        retVal =  FALSE;
+        UINT_16 index;
+        for (index = 0; index < TABLE_SIZE; index++)
+        {
+            m_Table[index].enable = TRUE;
+        }
+        valid = TRUE;
     }
-
-    *addr = ramOrigValue;
-
-    ENABLE_ALL_INTERRUPTS();
-
-    return retVal;
+    else if (tableIndex < TABLE_SIZE)
+    {
+        m_Table[tableIndex].enable = TRUE;
+        valid = TRUE;
+    }
+    return (valid);
 }
 
-//--------------------------------------------------------------------------
-// Module:
-//  RAMStuckDataTest
-//
-///   This function tests for a stuck data bit by walking 0's
-///   and walking 1's through one memory address.
-///
-///   \param aBaseAddress - the memory address to test
-///
-///   returns BOOLEAN - TRUE if test passed
-///
-//--------------------------------------------------------------------------
-static BOOLEAN RAMStuckDataTest (UINT_32 aBaseAddress)
-{
-    register UINT_16 HUGE *baseAddress = (UINT_16 *)aBaseAddress;
-    register BOOLEAN retVal = TRUE;
-    register UINT_16 data;
-    register UINT_16 origContents;
-
-    DISABLE_ALL_INTERRUPTS();
-
-    /* Save the original contents; will be restored after
-       the test is over */
-    origContents = baseAddress[0];
-
-    for (data = 1; data != 0; data <<= 1)
-    {
-        ToggleCPUWatchdog();
-        /* Walk a 1 the entire length of the data bus */
-        baseAddress[0] = data;
-        /* Verify */
-        if (baseAddress[0] != data)
-        {
-            retVal = FALSE;
-        }
-        /* Walk a 0 the entire length of the data bus */
-        baseAddress[0] = (UINT_16)~data;
-        /* Verify */
-        if (baseAddress[0] != (UINT_16)~data)
-        {
-            retVal = FALSE;
-        }
-    }
-
-    /* Restore the contents */
-    baseAddress[0] = origContents;
-
-    ENABLE_ALL_INTERRUPTS();
-
-    return retVal;
-}
-
-
-//--------------------------------------------------------------------------
-// Module:
-//  RAMStuckAddressTest
-//
-///   This function tests for a stuck address bit by walking 0's
-///   and walking 1's on the address bus. This function tests
-///   only the lower 16 bits (64k of memory) of the address bus.
-///
-///   \param aBaseAddress - the memory address to test
-///
-///   returns BOOLEAN - TRUE if test passed
-///
-//--------------------------------------------------------------------------
-static BOOLEAN RAMStuckAddressTest (UINT_32 aBaseAddress)
-{
-    register UINT_16 HUGE *baseAddress = (UINT_16 *)aBaseAddress;
-    register UINT_16 offset;
-    register UINT_16 memUnderTestContents;
-    register UINT_16 baseContents;
-    register BOOLEAN retVal = TRUE;
-    const UINT_16 pattern = 0x5555;
-
-    DISABLE_ALL_INTERRUPTS();    /* Store the original contents */
-    baseContents = baseAddress[0];
-    /* Write a fixed pattern to the base */
-    baseAddress[0] = pattern;
-    /* Look for stuck low address bits */
-    /* Walk address of 1's */
-    for (offset = 1; offset != 0x8000; offset <<= 1)
-    {
-        ToggleCPUWatchdog();
-        /* Save contents of address */
-        memUnderTestContents = baseAddress[offset];
-        /* Write the opposite of the test pattern */
-        baseAddress[offset] = ~pattern;
-        /* Verify the base hasn't been corrupted */
-        if (baseAddress[0] != pattern)
-        {
-            retVal = FALSE;
-        }
-        baseAddress[offset] = memUnderTestContents;
-    }
-    /* Restore the original contents */
-    baseAddress[0] = baseContents;
-    /* Now start at the high end of the 64k memory  */
-    baseContents = baseAddress[0x7FFF];
-    /* Write the pattern */
-    baseAddress[0x7FFF] = pattern;
-    /* Look for stuck high address bits */
-    /* Walk address of 0's */
-    for (offset = 1; offset != 0x8000; offset <<= 1)
-    {
-        /* Save contents of address. By inverting offset,
-           0's are walked */
-        memUnderTestContents = baseAddress[ (UINT_16)~offset];
-        /* Write the opposite of the test pattern */
-        baseAddress[ (UINT_16)~offset] = ~pattern;
-        /* Verify the base hasn't been corrupted */
-        if (baseAddress[0x7FFF] != pattern)
-        {
-            retVal = FALSE;
-        }
-        baseAddress[ (UINT_16)~offset] = memUnderTestContents;
-    }
-    /* Restore the original contents */
-    baseAddress[0x7FFF] = baseContents;
-    ENABLE_ALL_INTERRUPTS();
-    return retVal;
-}

@@ -72,6 +72,9 @@
     <ClCompile Include="Minimal\Source\Flash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minimal\Source\RAMTest.C">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Minimal\Source\CRC.h">
@@ -162,6 +165,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Minimal\Source\Version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\RAMTest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

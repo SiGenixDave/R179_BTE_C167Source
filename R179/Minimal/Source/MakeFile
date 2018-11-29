@@ -145,7 +145,7 @@ OBJECTS =			\
 	interupt.obj	\
 	ipack.obj       \
 	main.obj		\
-	ram.obj			\
+	ramtest.obj		\
 	spareisr.obj	\
 	TaskMVB.obj		\
 	Pil_def.obj		\

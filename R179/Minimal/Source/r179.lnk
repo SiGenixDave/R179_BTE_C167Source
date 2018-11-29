@@ -11,7 +11,7 @@ hwinit.obj
 interupt.obj
 ipack.obj
 main.obj
-ram.obj
+ramtest.obj
 spareisr.obj
 TaskMVB.obj
 Mvbvar.obj
