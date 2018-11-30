@@ -51,6 +51,7 @@ static BOOLEAN m_ContinuousPeekOrPokeEnabled = FALSE;
 static void ProcessSerialInputChar(char ch);
 static void SendCommandResponse(BOOLEAN validCmdReceived);
 static void ParseValidCommand(void);
+static char *GetDataString(UINT_32 data, eDataWidth dataWidth);
 
 void ApplicationService(void)
 {
@@ -103,55 +104,31 @@ void ResetStateMachine(void)
 void SendTestPassed(const char *str, UINT_32 expectedValue, eDataWidth dataWidth)
 {
 	char response[50];
-	const char *formatSpecifier32 = "<%s,PASS,%d>";
-	const char *formatSpecifier16 = "<%s,PASS,%x>\n\r";
-	const char *formatSpecifier8 = "<%s,PASS,%d>";
-	const char *formatSpecifier;
 
-	switch (dataWidth)
-	{
-	default:
-	case BIT_WIDTH_8:
-		formatSpecifier = formatSpecifier8;
-		break;
-	case BIT_WIDTH_16:
-		formatSpecifier = formatSpecifier16;
-		break;
-	case BIT_WIDTH_32:
-		formatSpecifier = formatSpecifier32;
-		break;
-	}
+	strcpy(response, "<");
+	strcat(response, str);
+	strcat(response, ",PASS,");
 
-	sprintf(response, formatSpecifier, str, expectedValue);
+	strcat(response, GetDataString(expectedValue, dataWidth));
+	strcat(response, ">");
 
-	SC_Puts(response);
+	SC_PutsAlways(response);
 }
 
 void SendMismatchError(const char *str, UINT_32 expectedValue, UINT_32 actualValue, eDataWidth dataWidth)
 {
 	char response[50];
-	const char *formatSpecifier32 = "<%s,FAIL,%8x,%8x>";
-	const char *formatSpecifier16 = "<%s,FAIL,%x,%x>\n\r";
-	const char *formatSpecifier8 = "<%s,FAIL,%2x,%2x>";
-	const char *formatSpecifier;
 
-	switch (dataWidth)
-	{
-	default:
-	case BIT_WIDTH_8:
-		formatSpecifier = formatSpecifier8;
-		break;
-	case BIT_WIDTH_16:
-		formatSpecifier = formatSpecifier16;
-		break;
-	case BIT_WIDTH_32:
-		formatSpecifier = formatSpecifier32;
-		break;
-	}
+	strcpy(response, "<");
+	strcat(response, str);
+	strcat(response, ",FAIL,");
 
-	sprintf(response, formatSpecifier, str, expectedValue, actualValue);
+	strcat(response, GetDataString(expectedValue, dataWidth));
+	strcat(response, ",");
+	strcat(response, GetDataString(actualValue, dataWidth));
+	strcat(response, ">");
 
-	SC_Puts(response);
+	SC_PutsAlways(response);
 }
 
 static void ProcessSerialInputChar(char ch)
@@ -273,4 +250,50 @@ static void ParseValidCommand(void)
 	valid = m_CmdUpdate[index].cmdUpdateFnPtr(&parsedCommands[0]);
 
 	SendCommandResponse(valid);
+}
+
+/* Needed because sprintf doesn't work on the C167 */
+static char *GetDataString(UINT_32 data, eDataWidth dataWidth)
+{
+	UINT_16 i;
+	UINT_16 shift;
+	static char value[10];
+
+	/* Clear all of memory so that string will be NULL terminated */
+	memset(value, 0, sizeof(value));
+
+	switch (dataWidth)
+	{
+	case BIT_WIDTH_8:
+		shift = 8;
+		break;
+
+	case BIT_WIDTH_16:
+		shift = 16;
+		break;
+
+	case BIT_WIDTH_32:
+		shift = 32;
+		break;
+
+	default:
+		shift = 0;
+		break;
+	}
+
+	i = 0;
+	while (shift != 0)
+	{
+		shift -= 4;
+		/* Convert each nibble, starting with the MS Nibble to ASCII */
+		value[i] = '0' + ((data >> shift) & 0xf);
+		/* Convert values from A-F */
+		if (value[i] > '9')
+		{
+			value[i] = value[i] + 7;
+		}
+		i++;
+	}
+
+	return (value);
 }

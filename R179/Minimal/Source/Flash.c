@@ -55,7 +55,13 @@ static const UINT_16 TABLE_SIZE = sizeof(m_Table) / sizeof(UpdateTable);
 
 void FlashService(const char *str)
 {
-	UINT_16 *baseAddress = (UINT_16 *)0x110000;
+#ifdef _WIN32
+    UINT_16 debugBaseArray[100] = {0x0000, 0x0001, 0x0002, 0x0004, 0x0008, 0x0010, 0xABCD, 0xABCD, 0xABCD, 0xABCD,
+                                   0x1234, 0x3456, 0x0023, 0x0234, 0x0008};
+    UINT_16 *baseAddress = debugBaseArray;
+#else
+    UINT_16 *baseAddress = (UINT_16 *)0x110000;
+#endif
 
 	UINT_16 actualValue;
 	UINT_16 expectedValue;
@@ -65,15 +71,9 @@ void FlashService(const char *str)
 	{
 		if (m_Table[index].enable)
 		{
-			char deleteMe[30];
-			//SendMismatchError(str, (UINT_32)0x10, (UINT_32)0x20, BIT_WIDTH_16);
-
 			m_Table[index].enable = FALSE;
 			actualValue = baseAddress[m_Table[index].addrOffset];
 			expectedValue = m_Table[index].data;
-
-			sprintf(deleteMe, "ExpV = %x ActV = %x\n\r", expectedValue, actualValue);
-			SC_PutsAlways(deleteMe);
 
 			if (actualValue != expectedValue)
 			{

@@ -87,7 +87,7 @@ CCFLAGS = -D_C167
 !endif
 
 
-COPTS = -OfOpOI -s -T0 -Ml -x -g -err -w68 -OC -OR -c -O3 -F
+COPTS = -OfOpOI -s -T0 -Ml -x -g -err -w68 -OC -OR -c -O3 -F -libfmtiol
 #COPTS = -OfOpOI -s -T0 -Ml -x -g -err -w68 -OC -OR -c
 # Used to generate a list file for examining assembly output of the complier 
 #COPTS = -c -Ml -w91 -w68 -O3 -WaEX -WaPR($*.lst) -x -g -s -err
@@ -162,7 +162,7 @@ OBJECTS =			\
 #==================================================================================== 
 
 MVBLIB=..\..\MVB\lib\hidac.lib
-LIBS = $(C166)\lib\extp\c166l.lib $(C166)\lib\extp\rt166l.lib $(C166)\lib\extp\fp166l.lib $(MVBLIB)
+LIBS = $(C166)\lib\extp\c166l.lib  $(C166)\lib\extp\fmtiohls.lib $(C166)\lib\extp\rt166l.lib $(C166)\lib\extp\fp166l.lib $(MVBLIB)
 
 ##===================================================================================
 # Link and locate commands
