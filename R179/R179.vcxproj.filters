@@ -75,6 +75,15 @@
     <ClCompile Include="Minimal\Source\RAMTest.C">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minimal\Source\CmdProc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\NVRam.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Minimal\Source\RTC.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Minimal\Source\CRC.h">
@@ -168,6 +177,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Minimal\Source\RAMTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\CmdProc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\Flash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\NVRam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\RTC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

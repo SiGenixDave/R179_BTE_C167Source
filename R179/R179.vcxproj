@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Minimal\Source\Analog.c" />
+    <ClCompile Include="Minimal\Source\CmdProc.c" />
     <ClCompile Include="Minimal\Source\CRC.C" />
     <ClCompile Include="Minimal\Source\Debug.c" />
     <ClCompile Include="Minimal\Source\Digital.c" />
@@ -22,20 +23,24 @@
     <ClCompile Include="Minimal\Source\IPack.c" />
     <ClCompile Include="Minimal\Source\MAIN.c" />
     <ClCompile Include="Minimal\Source\mvbvar.c" />
+    <ClCompile Include="Minimal\Source\NVRam.c" />
     <ClCompile Include="Minimal\Source\PIL_DEF.C" />
     <ClCompile Include="Minimal\Source\Pwm.c" />
     <ClCompile Include="Minimal\Source\RAM.C" />
     <ClCompile Include="Minimal\Source\RAMTest.C" />
+    <ClCompile Include="Minimal\Source\RTC.c" />
     <ClCompile Include="Minimal\Source\SPAREISR.c" />
     <ClCompile Include="Minimal\Source\TaskMVB.c" />
     <ClCompile Include="Minimal\Source\Version.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Minimal\Source\Analog.h" />
+    <ClInclude Include="Minimal\Source\CmdProc.h" />
     <ClInclude Include="Minimal\Source\CRC.h" />
     <ClInclude Include="Minimal\Source\cssmisc.h" />
     <ClInclude Include="Minimal\Source\Debug.h" />
     <ClInclude Include="Minimal\Source\Digital.h" />
+    <ClInclude Include="Minimal\Source\Flash.h" />
     <ClInclude Include="Minimal\Source\HEXLED.h" />
     <ClInclude Include="Minimal\Source\HidacDrv\AlogOut.h" />
     <ClInclude Include="Minimal\Source\HidacDrv\AnalogIn.h" />
@@ -54,9 +59,11 @@
     <ClInclude Include="Minimal\Source\HWInit.h" />
     <ClInclude Include="Minimal\Source\Ipack.h" />
     <ClInclude Include="Minimal\Source\mvbvar.h" />
+    <ClInclude Include="Minimal\Source\NVRam.h" />
     <ClInclude Include="Minimal\Source\Pwm.h" />
     <ClInclude Include="Minimal\Source\RAM.h" />
     <ClInclude Include="Minimal\Source\RAMTest.h" />
+    <ClInclude Include="Minimal\Source\RTC.h" />
     <ClInclude Include="Minimal\Source\TaskMvb.h" />
     <ClInclude Include="Minimal\Source\tcn.h" />
     <ClInclude Include="Minimal\Source\tcn_api.h" />

@@ -1,6 +1,7 @@
 heapsize(16384)
 
 analog.obj
+cmdproc.obj
 cstart.obj
 crc.obj
 debug.obj
@@ -11,7 +12,10 @@ hwinit.obj
 interupt.obj
 ipack.obj
 main.obj
+nvram.obj
+ram.obj
 ramtest.obj
+rtc.obj
 spareisr.obj
 TaskMVB.obj
 Mvbvar.obj

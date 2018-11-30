@@ -30,6 +30,7 @@
 #include "Debug.h"
 #include "Ipack.h"
 #include "Timer.h"
+#include "CmdProc.h"
 
   /*--------------------------------------------------------------------------
 							   MODULE CONSTANTS
@@ -149,6 +150,7 @@ void main(void)
 	}
 
 	HIDAC_TEST_LED_OFF();
+	HIDAC_FAIL_LED_OFF();
 
 	SetStartupSuccessful(TRUE);
 
@@ -164,11 +166,13 @@ void main(void)
 	/* This is the background loop */
 	while (1)
 	{
+		ApplicationService();
+
 		// Used to measure CPU loading
-		DebugUpdateLoadCounter();
+		// DebugUpdateLoadCounter();
 
 		/* Code that executes in the main while forever loop. All RealTime critical
 			application code is interrupt driven */
-		DebugService();
+			// DebugService();
 	}
 }
