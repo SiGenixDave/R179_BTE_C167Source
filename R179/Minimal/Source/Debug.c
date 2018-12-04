@@ -31,7 +31,6 @@
 #include "AlogOut.h"
 #include "Analog.h"
 #include "CRC.h"
-#include "Version.h"
 #include "HWInit.h"
 
   /*--------------------------------------------------------------------------
@@ -196,9 +195,6 @@ void DebugPrintSoftwareVersion(void)
 
 	SC_PutsAlways("\n\r");
 	SC_PutsAlways("**************************************\n\r");
-	SC_PutsAlways("R179 HiDAC Software Version ");
-	SC_PutsAlways(GetSoftwareVersionString());
-	SC_PutsAlways(".0\n\r");
 	crc = GetCRC();
 	sprintf(str, "CRC = 0x%x\n\r", crc);
 	SC_PutsAlways(str);
@@ -368,12 +364,6 @@ static void DebugParseInputChar(UINT_16 aInChar)
 	case 'h':
 	case 'H':
 		DebugHelp();
-		break;
-
-		// Output software version
-	case 'v':
-	case 'V':
-		DebugPrintSoftwareVersion();
 		break;
 
 		// Output HiDAC errors
@@ -775,7 +765,6 @@ static void DebugHelp(void)
 	SC_PutsAlways("'P' - PWM Output Debugging Enable / Disable\n\r");
 	SC_PutsAlways("'W' - MVB Output Watchdog Debugging Enable / Disable\n\r");
 	SC_PutsAlways("**************************************************************************\n\r");
-	SC_PutsAlways("'v' or 'V' - Display Application S/W CRC and version\n\r");
 	SC_PutsAlways("'b' or 'B' - Enter BURNIN mode... power cycle required to exit this mode\n\r");
 	SC_PutsAlways("'t' - Decrease sample time by 100 ms\n\r");
 	SC_PutsAlways("'T' - Increase sample time by 100 ms\n\r");

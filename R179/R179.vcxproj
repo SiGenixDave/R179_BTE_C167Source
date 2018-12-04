@@ -24,6 +24,7 @@
     <ClCompile Include="Minimal\Source\MAIN.c" />
     <ClCompile Include="Minimal\Source\mvbvar.c" />
     <ClCompile Include="Minimal\Source\NVRam.c" />
+    <ClCompile Include="Minimal\Source\PeekPoke.c" />
     <ClCompile Include="Minimal\Source\PIL_DEF.C" />
     <ClCompile Include="Minimal\Source\Pwm.c" />
     <ClCompile Include="Minimal\Source\RAM.C" />
@@ -60,6 +61,7 @@
     <ClInclude Include="Minimal\Source\Ipack.h" />
     <ClInclude Include="Minimal\Source\mvbvar.h" />
     <ClInclude Include="Minimal\Source\NVRam.h" />
+    <ClInclude Include="Minimal\Source\PeekPoke.h" />
     <ClInclude Include="Minimal\Source\Pwm.h" />
     <ClInclude Include="Minimal\Source\RAM.h" />
     <ClInclude Include="Minimal\Source\RAMTest.h" />

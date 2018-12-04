@@ -13,6 +13,7 @@ interupt.obj
 ipack.obj
 main.obj
 nvram.obj
+peekpoke.obj
 ram.obj
 ramtest.obj
 rtc.obj

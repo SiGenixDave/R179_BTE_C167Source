@@ -84,6 +84,9 @@
     <ClCompile Include="Minimal\Source\RTC.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Minimal\Source\PeekPoke.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Minimal\Source\CRC.h">
@@ -189,6 +192,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Minimal\Source\RTC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Minimal\Source\PeekPoke.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
