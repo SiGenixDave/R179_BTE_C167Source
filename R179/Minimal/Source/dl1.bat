@@ -1,1 +1,1 @@
-FlashC167 1 r179table.hex config.crc ipack2
+FlashC167 1 r179table.hex ipack2
